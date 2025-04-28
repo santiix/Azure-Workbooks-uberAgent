@@ -1,0 +1,182 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "TimeRange",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 604800000
+                }
+              ],
+              "allowCustom": true
+            },
+            "label": "Time Range",
+            "value": {
+              "durationMs": 604800000
+            }
+          },
+          {
+            "id": "Machine",
+            "version": "KqlParameterItem/1.0",
+            "name": "Machine",
+            "label": "Enter Server Name",
+            "type": 1,
+            "isRequired": true,
+            "value": "*"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "filters"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\n\r\nuberAgent_Application_ApplicationInventory_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| summarize InstallCount = count() by bin(TimeGenerated, 1d)\r\n| sort by TimeGenerated asc\r\n\r\n\r\n",
+        "size": 0,
+        "title": "Install Count Over Time",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscrition-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+        ],
+        "visualization": "barchart"
+      },
+      "customWidth": "50",
+      "name": "query - 2",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\n\r\nuberAgent_Application_ApplicationInventory_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| summarize Installs = count() by Publisher_s\r\n| where isnotempty(Publisher_s)\r\n| top 10 by Installs\r\n| project Publisher = Publisher_s, Installs",
+        "size": 0,
+        "title": "Top Installed Application Publishers",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscrition-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+        ],
+        "visualization": "categoricalbar"
+      },
+      "customWidth": "50",
+      "name": "query - 3",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\n\r\nuberAgent_Application_ApplicationInventory_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| project TimeGenerated, Computer, DisplayName_s, DisplayVersion_s, InstallDate_s, InstallLocation_s, Publisher_s, IsMachineInstall_b, IsMsiPackage_b, Language_s\r\n| sort by TimeGenerated desc",
+        "size": 0,
+        "title": "Application Inventory ",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscrition-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+        ]
+      },
+      "name": "query - 0"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nuberAgent_Application_ApplicationInventory_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| summarize AppCount = dcount(DisplayName_s) by Computer\r\n| top 10 by AppCount desc\r\n",
+        "size": 0,
+        "title": "Top Machines by App Count",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscrition-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+        ],
+        "visualization": "categoricalbar"
+      },
+      "customWidth": "50",
+      "name": "query - 4",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nuberAgent_Application_ApplicationInventory_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| summarize Count = count() by Language = coalesce(Language_s, \"Unknown\")\r\n| top 10 by Count\r\n",
+        "size": 0,
+        "title": "Language Distribution of Apps",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscrition-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+        ],
+        "visualization": "categoricalbar",
+        "tileSettings": {
+          "showBorder": false,
+          "titleContent": {
+            "columnMatch": "Language",
+            "formatter": 1
+          },
+          "leftContent": {
+            "columnMatch": "Count",
+            "formatter": 12,
+            "formatOptions": {
+              "palette": "auto"
+            },
+            "numberFormat": {
+              "unit": 17,
+              "options": {
+                "maximumSignificantDigits": 3,
+                "maximumFractionDigits": 2
+              }
+            }
+          }
+        }
+      },
+      "customWidth": "50",
+      "name": "query - 5",
+      "styleSettings": {
+        "showBorder": true
+      }
+    }
+  ],
+  "fallbackResourceIds": [
+    "azure monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
