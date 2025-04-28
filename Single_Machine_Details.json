@@ -1,0 +1,466 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "Query Will Not Return Results Until You Enter a Server Hostname",
+        "style": "warning"
+      },
+      "name": "text - 11"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "TimeRange",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "value": {
+              "durationMs": 604800000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 604800000
+                }
+              ],
+              "allowCustom": true
+            },
+            "label": "Time Range"
+          },
+          {
+            "id": "Machine",
+            "version": "KqlParameterItem/1.0",
+            "name": "MachineName",
+            "label": "Enter Server Name",
+            "type": 1,
+            "isRequired": true,
+            "value": "*"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "filters"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineName = \"{MachineName}\";\nlet SystemPerformance = \n    uberAgent_System_SystemPerformanceSummary2_CL\n    | where Computer == MachineName\n    | summarize \n        AvgCPURelativeFrequencyPercent = avg(CPURelativeFrequencyPercent_d)\n        by Computer;\nlet MachineInventory = \n    uberAgent_System_MachineInventory_CL \n    | where Computer == MachineName\n    | sort by TimeGenerated desc\n    | take 1\n    | project\n        Computer, \n        LatestCPUCoresLogical = CPUCoresLogical_d,\n        HwManufacturer = HwManufacturer_s,\n        HwModel = HwModel_s,\n        LatestCPUMaxMhz = CPUMaxMhz_d,\n        LatestRAMSizeGB = RAMSizeGB_d;\nMachineInventory\n| join kind=inner (SystemPerformance) on Computer\n| extend \n    CPUBaseGHz = round(LatestCPUMaxMhz / 1000.0, 2),\n    CPUActualGHz = round(LatestCPUMaxMhz / 1000.0 * AvgCPURelativeFrequencyPercent / 100.0, 2)\n| project \n    Computer,\n    HwManufacturer,\n    HwModel,\n    CPUActualGHz,\n    CPUBaseGHz,\n    LatestCPUCoresLogical,\n    LatestRAMSizeGB",
+        "size": 3,
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+        ],
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "LatestRAMSizeGB",
+              "formatter": 0,
+              "numberFormat": {
+                "unit": 5,
+                "options": {
+                  "style": "decimal"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "name": "query - 2",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineName = \"{MachineName}\";\r\nlet systemPerformance = \r\n    uberAgent_System_SystemPerformanceSummary2_CL\r\n    | where Computer == MachineName\r\n    | summarize \r\n        AvgCPUUsagePercent = avg(CPUUsagePercent_d),\r\n        AvgIOPercentDiskTime = avg(IOPercentDiskTime_d),\r\n        AvgRAMUsagePercent = avg(RAMUsagePercent_d),\r\n        AvgNetUtilizationPercent = avg(NetUtilizationPercent_d),\r\n        AvgPagefileUsagePercent = avg(PagefileUsagePercent_d)\r\n        by Computer\r\n    | extend \r\n        AvgCPUUsagePercentRounded = round(AvgCPUUsagePercent, 1),\r\n        AvgIOPercentDiskTimeRounded = round(AvgIOPercentDiskTime, 2),\r\n        AvgRAMUsagePercentRounded = round(AvgRAMUsagePercent, 1),\r\n        AvgNetUtilizationPercentRounded = round(AvgNetUtilizationPercent, 1),\r\n        AvgPagefileUsagePercentRounded = round(AvgPagefileUsagePercent, 1)\r\n    | project Computer, AvgCPUUsagePercentRounded, AvgIOPercentDiskTimeRounded, AvgRAMUsagePercentRounded, AvgNetUtilizationPercentRounded, AvgPagefileUsagePercentRounded;\r\nlet uiDelay = \r\n    uberAgent_Application_UIDelay_CL\r\n    | where Computer == MachineName\r\n    | summarize SumUIDelayMs = sum(UIDelayMs_d) by Computer\r\n    | extend SumUIDelayS = round(SumUIDelayMs / 1000, 1)\r\n    | project Computer, SumUIDelayS;\r\nlet logonDetails = uberAgent_Logon_LogonDetail_CL\r\n| where Computer == MachineName\r\n| summarize \r\n    LogonCount = dcount(SessionGUID_g),\r\n    AvgTotalLogonTimeMs = avg(TotalLogonTimeMs_d)\r\n    by Computer\r\n| extend AvgTotalLogonTimeSRounded = iff(isnull(AvgTotalLogonTimeMs), \"n/a\", tostring(round(AvgTotalLogonTimeMs / 1000.0, 2)))\r\n| project Computer, AvgTotalLogonTimeSRounded;\r\nsystemPerformance\r\n| join kind=inner (uiDelay) on Computer\r\n| join kind=inner (logonDetails) on Computer\r\n| project Computer, AvgCPUUsagePercentRounded, AvgRAMUsagePercentRounded, AvgIOPercentDiskTimeRounded, AvgNetUtilizationPercentRounded, SumUIDelayS, AvgTotalLogonTimeSRounded, AvgPagefileUsagePercentRounded;",
+        "size": 3,
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+        ]
+      },
+      "name": "query - 2",
+      "styleSettings": {
+        "margin": "0px 0px 0px",
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineName = \"{MachineName}\";\nlet Process_NetworkTargetPerformance = \n    uberAgent_Process_NetworkTargetPerformance_CL \n    | where Computer in (MachineName)\n    | summarize\n        SumNetTargetSendMB = sum(NetTargetSendMB_d),\n        SumNetTargetReceiveMB = sum(NetTargetReceiveMB_d)\n    by bin(TimeGenerated, 1h);\n\nProcess_NetworkTargetPerformance\n| project \n    TimeGenerated, \n    SumNetTargetSendMB, \n    SumNetTargetReceiveMB\n| render columnchart\n",
+        "size": 0,
+        "title": "Network data volume over time",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+        ],
+        "tileSettings": {
+          "showBorder": false
+        },
+        "graphSettings": {
+          "type": 0
+        },
+        "chartSettings": {
+          "xAxis": "TimeGenerated",
+          "showMetrics": false,
+          "showLegend": true,
+          "seriesLabelSettings": [
+            {
+              "seriesName": "SumNetTargetSendMB",
+              "label": "Send volume (MB)",
+              "color": "orange"
+            },
+            {
+              "seriesName": "SumNetTargetReceiveMB",
+              "label": "Receive volume (MP)",
+              "color": "purple"
+            },
+            {
+              "seriesName": "AvgSendLatencyMs",
+              "label": "Avg. send latency (ms)",
+              "color": "blue"
+            }
+          ],
+          "ySettings": {
+            "label": "Data Volume (MB)"
+          }
+        },
+        "mapSettings": {
+          "locInfo": "LatLong",
+          "sizeSettings": "SumNetTargetSendMB",
+          "sizeAggregation": "Sum",
+          "legendMetric": "SumNetTargetSendMB",
+          "legendAggregation": "Sum",
+          "itemColorSettings": {
+            "type": "heatmap",
+            "colorAggregation": "Sum",
+            "nodeColorField": "SumNetTargetSendMB",
+            "heatmapPalette": "greenRed"
+          }
+        }
+      },
+      "customWidth": "50",
+      "name": "query - 6",
+      "styleSettings": {
+        "margin": "0px 0px 0px",
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineName = \"{MachineName}\";\nlet System_SystemPerformanceSummary = \n    uberAgent_System_SystemPerformanceSummary2_CL\n    | where Computer in (MachineName)\n    | summarize\n        EventCount = count(),\n        SumRAMUsageGB = sum(RAMUsageGB_d)\n    by bin(TimeGenerated, 1h);\n\nSystem_SystemPerformanceSummary\n| extend \n    AvgRAMGB = round(SumRAMUsageGB / EventCount, 1)\n| project \n    TimeGenerated, \n    AvgRAMGB\n| render columnchart\n",
+        "size": 0,
+        "title": "RAM over time",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+        ],
+        "visualization": "barchart",
+        "chartSettings": {
+          "showMetrics": false,
+          "showLegend": true,
+          "seriesLabelSettings": [
+            {
+              "seriesName": "AvgRAMGB",
+              "label": "Avg. RAM (GB)"
+            },
+            {
+              "seriesName": "AvgCPUPercent",
+              "label": "Avg. CPU (%)"
+            }
+          ]
+        }
+      },
+      "customWidth": "50",
+      "name": "query - 7",
+      "styleSettings": {
+        "margin": "0px 0px 0px",
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineName = \"{MachineName}\";\n\nuberAgent_Process_NetworkTargetPerformance_CL \n    | where Computer in (MachineName)\n    | summarize\n        AvgNetTargetSendLatencyMs_d = avg(NetTargetSendLatencyMs_d)\n    by bin(TimeGenerated, 1h)\n| extend \n    AvgSendLatencyMs = round(AvgNetTargetSendLatencyMs_d, 1)\n| project \n    TimeGenerated,\n    AvgSendLatencyMs\n",
+        "size": 0,
+        "title": "Network latency over time",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+        ],
+        "visualization": "linechart",
+        "tileSettings": {
+          "showBorder": false
+        },
+        "graphSettings": {
+          "type": 0
+        },
+        "chartSettings": {
+          "xAxis": "TimeGenerated",
+          "showMetrics": false,
+          "seriesLabelSettings": [
+            {
+              "seriesName": "SumNetTargetSendMB",
+              "label": "Send volume (MB)",
+              "color": "orange"
+            },
+            {
+              "seriesName": "SumNetTargetReceiveMB",
+              "label": "Receive volume (MP)",
+              "color": "purple"
+            },
+            {
+              "seriesName": "AvgSendLatencyMs",
+              "label": "Avg. send latency (ms)",
+              "color": "blue"
+            }
+          ],
+          "showDataPoints": true,
+          "ySettings": {
+            "label": "Data Volume (MB)"
+          }
+        },
+        "mapSettings": {
+          "locInfo": "LatLong",
+          "sizeSettings": "SumNetTargetSendMB",
+          "sizeAggregation": "Sum",
+          "legendMetric": "SumNetTargetSendMB",
+          "legendAggregation": "Sum",
+          "itemColorSettings": {
+            "type": "heatmap",
+            "colorAggregation": "Sum",
+            "nodeColorField": "SumNetTargetSendMB",
+            "heatmapPalette": "greenRed"
+          }
+        }
+      },
+      "customWidth": "50",
+      "name": "query - 6 - Copy",
+      "styleSettings": {
+        "margin": "0px 0px 0px",
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineName = \"{MachineName}\";\nlet System_SystemPerformanceSummary = \n    uberAgent_System_SystemPerformanceSummary2_CL\n    | where Computer in (MachineName)\n    | summarize\n        EventCount = count(),\n        SumRAMUsageGB = sum(RAMUsageGB_d),\n        SumCPUUsagePercent = sum(CPUUsagePercent_d)\n    by bin(TimeGenerated, 1h);\n\nSystem_SystemPerformanceSummary\n| extend \n    AvgCPUPercent = round(SumCPUUsagePercent / EventCount, 1)\n| project \n    TimeGenerated, \n    AvgCPUPercent\n| render timechart\n",
+        "size": 0,
+        "title": "CPU over time",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+        ],
+        "chartSettings": {
+          "showMetrics": false,
+          "showLegend": true,
+          "seriesLabelSettings": [
+            {
+              "seriesName": "AvgRAMGB",
+              "label": "Avg. RAM (GB)"
+            },
+            {
+              "seriesName": "AvgCPUPercent",
+              "label": "Avg. CPU (%)"
+            }
+          ]
+        }
+      },
+      "customWidth": "50",
+      "name": "query - 7 - Copy",
+      "styleSettings": {
+        "margin": "0px 0px 0px",
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineName = \"{MachineName}\";\n\nuberAgent_Process_ProcessDetail_CL\n| where Computer in (MachineName)\n| summarize\n    [\"#Users\"] = dcount(ProcUser_s),\n    [\"Process name(s)\"] = makeset(ProcName_s),\n    AvgProcCPUPercent = avg(ProcCPUPercent_d),\n    AvgProcIOPS = avg(ProcIOPSRead_d + ProcIOPSWrite_d),\n    SumProcIOCount = sum(ProcIOReadCount_d + ProcIOWriteCount_d) ,\n    SumProcIODurationMs = sum(ProcIOLatencyReadMs2_d * ProcIOReadCount_d + ProcIOLatencyWriteMs2_d * ProcIOWriteCount_d),\n    AvgProcWorkingSetMB = avg(ProcWorkingSetMB_d),\n    AvgProcNetKBPS = avg(ProcNetKBPS_d)\n    by AppId_s\n| join kind=leftouter \n    (uberAgent_Process_NetworkTargetPerformance_CL\n    | where Computer in (MachineName)\n    | summarize\n        SumNetTargetSendLatencyCount = sum(NetTargetSendLatencyCount_d),\n        SumNetTargetSendDurationMs = sum(NetTargetSendLatencyMs_d * NetTargetSendLatencyCount_d)\n        by AppId_s)\n    on AppId_s\n| join kind=leftouter \n    (uberAgent_Application_UIDelay_CL\n    | where Computer in (MachineName)\n    | summarize\n        SumUIDelayMs = sum(UIDelayMs_d)\n        by AppId_s)\n    on AppId_s\n\n| join kind=leftouter \n    (uberAgent_Application_AppNameIdMapping_CL\n    | where Computer in (MachineName)\n     | summarize\n        AppName = any(AppName_s)\n        by AppId_s)\n    on AppId_s\n| extend [\"Avg. CPU (%)\"] = round(AvgProcCPUPercent, 1)\n| extend [\"Avg. IOPS\"] = round(AvgProcIOPS, 1)\n| extend [\"Avg. IO latency (ms)\"] = round(SumProcIODurationMs / SumProcIOCount, 1)\n| extend [\"Avg. RAM (MB)\"] = round(AvgProcWorkingSetMB, 0)\n| extend [\"Avg. net thruput (KB/s)\"] = round(AvgProcNetKBPS, 1)\n| extend [\"Avg. net latency (ms)\"] = round(SumNetTargetSendDurationMs / SumNetTargetSendLatencyCount, 1)\n| extend [\"UI unresponsiveness (s)\"] = round(SumUIDelayMs / 1000, 1)\n| project\n    AppName,\n    [\"Process name(s)\"],\n    [\"Avg. CPU (%)\"],\n    [\"Avg. IOPS\"],\n    [\"Avg. IO latency (ms)\"],\n    [\"Avg. RAM (MB)\"],\n    [\"Avg. net thruput (KB/s)\"],\n    [\"Avg. net latency (ms)\"],\n    [\"UI unresponsiveness (s)\"],\n    [\"#Users\"]\n| sort by AppName asc  ",
+        "size": 0,
+        "title": "Applications",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+        ]
+      },
+      "name": "applications",
+      "styleSettings": {
+        "margin": "0px 0px 0px",
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineName = \"{MachineName}\";\nlet NetworkTargetPerformance = \n    uberAgent_Process_NetworkTargetPerformance_CL\n    | where Computer == MachineName\n    | summarize \n        TargetIP = any(NetTargetRemoteAddress_s), \n        SumNetTargetSendCount = sum(NetTargetSendCount_d),\n        SumNetTargetReceiveCount = sum(NetTargetReceiveCount_d),\n        SumNetTargetConnectCount = sum(NetTargetConnectCount_d),\n        SumNetTargetReconnectCount = sum(NetTargetReconnectCount_d),\n        SumNetTargetRetransmitCount = sum(NetTargetRetransmitCount_d),\n        SumNetTargetSendMB = sum(NetTargetSendMB_d),\n        SumNetTargetReceiveMB = sum(NetTargetReceiveMB_d),\n        SumNetTargetSendLatencyCount = sum(NetTargetSendLatencyCount_d),\n        SumNetTargetSendDurationMs = sum(NetTargetSendLatencyMs_d),\n        ProcessCount = dcount(ProcName_s),\n        UserCount = dcount(ProcUser_s)\n    by NetTargetRemotePort_d, NetTargetProtocols_s;\n\nNetworkTargetPerformance\n| extend \n    SendCount = round(SumNetTargetSendCount, 0),\n    ReceiveCount = round(SumNetTargetReceiveCount, 0),\n    ConnectCount = round(SumNetTargetConnectCount, 0),\n    ReconnectCount = round(SumNetTargetReconnectCount, 0),\n    RetransmitCount = round(SumNetTargetRetransmitCount, 0),\n    SendVolumeMB = round(SumNetTargetSendMB, 1),\n    ReceiveVolumeMB = round(SumNetTargetReceiveMB, 1),\n    AvgSendLatencyMS = iif(SumNetTargetSendLatencyCount > 0, round(SumNetTargetSendDurationMs * 1.0 / SumNetTargetSendLatencyCount, 1), 0.0),\n    SortField = tolower(NetTargetRemotePort_d)\n| project \n    Target = NetTargetRemotePort_d,\n    TargetIP,\n    Protocols = NetTargetProtocols_s,\n    SendCount,\n    ReceiveCount,\n    ConnectCount,\n    ReconnectCount,\n    RetransmitCount,\n    SendVolumeMB,\n    ReceiveVolumeMB,\n    AvgSendLatencyMS,\n    ProcessCount,\n    UserCount,\n    SortField\n| sort by SortField asc\n| project-away SortField",
+        "size": 0,
+        "title": "Network Connections",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+        ]
+      },
+      "name": "query - 9",
+      "styleSettings": {
+        "margin": "0px 0px 0px",
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Disk Space",
+        "items": [
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "ae1e4cb1-81f0-484c-a4c3-2f81f041c1c9",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "timeRange_diskSpace",
+                  "label": "TimeRange :",
+                  "type": 4,
+                  "isRequired": true,
+                  "typeSettings": {
+                    "selectableValues": [
+                      {
+                        "durationMs": 300000
+                      },
+                      {
+                        "durationMs": 900000
+                      },
+                      {
+                        "durationMs": 1800000
+                      },
+                      {
+                        "durationMs": 3600000
+                      },
+                      {
+                        "durationMs": 14400000
+                      },
+                      {
+                        "durationMs": 43200000
+                      },
+                      {
+                        "durationMs": 86400000
+                      },
+                      {
+                        "durationMs": 172800000
+                      },
+                      {
+                        "durationMs": 259200000
+                      },
+                      {
+                        "durationMs": 604800000
+                      },
+                      {
+                        "durationMs": 1209600000
+                      },
+                      {
+                        "durationMs": 2419200000
+                      },
+                      {
+                        "durationMs": 2592000000
+                      },
+                      {
+                        "durationMs": 5184000000
+                      },
+                      {
+                        "durationMs": 7776000000
+                      }
+                    ]
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "value": {
+                    "durationMs": 604800000
+                  }
+                }
+              ],
+              "style": "pills",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "parameters - 0"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let MachineName = \"{MachineName}\";\nlet VolumeInventory = \nuberAgent_System_VolumeInventory_CL\n    | where Computer in (MachineName) and isnotempty(MountPoints_s)\n    | summarize \n        IsBootVolume = any(IsBootVolume_b),\n        IsDirty = any(IsDirty_b),\n        FileSystem = any(FileSystem_s),\n        LatestUsedSpacePercent = max(UsedSpacePercent_d),\n        LatestFreeMB = max(FreeMB_d),\n        CapacityMB = any(CapacityMB_d),\n        PartitionStyle = any(PartitionStyle_s)\n    by Computer, MountPoints_s, DiskNumbers_s;\n\nlet VolumeCalculations = \n    VolumeInventory\n    | extend \n        FreeSpaceGB = round(LatestFreeMB / 1024, 1),\n        FreeSpacePercent = round(100 - LatestUsedSpacePercent, 1),\n        UsedSpaceGB = round(CapacityMB * LatestUsedSpacePercent / 100 / 1024, 1)\n    | project \n        Computer,\n        Path = MountPoints_s,\n        FreeSpaceGB,\n        UsedSpaceGB,\n        FreeSpacePercent,\n        FileSystem,\n        PartitionStyle,\n        IsBootVolume,\n        IsDirty,\n        DiskNumber = toint(DiskNumbers_s);\n\n\nlet DiskInventory = \n    uberAgent_System_DiskInventory_CL\n    | where Computer in (MachineName)\n    | summarize \n        DeviceName = any(Name_s),\n        IsRemovable = any(IsRemovable_b),\n        IsWritable = any(IsWritable_b)\n    by Computer, DiskNumber_d\n    | extend DiskNumber = toint(DiskNumber_d)\n    | project \n        Computer, \n        DiskNumber, \n        DeviceName, \n        IsRemovable, \n        IsWritable;\n\n\nVolumeCalculations\n| join kind=leftouter  (\n    DiskInventory\n    | project \n        Computer,\n        DiskNumber,\n        DeviceName,\n        IsRemovable,\n        IsWritable\n) on Computer, DiskNumber\n| project \n    Host= Computer,\n    Path,\n    FreeSpaceGB,\n    UsedSpaceGB,\n    FreeSpacePercent,\n    DeviceName,\n    FileSystem,\n    PartitionStyle,\n    IsBootVolume,\n    Chkdsk_req = IsDirty,\n    IsRemovable,\n    IsWritable\n| order by Host, Path\n\n",
+              "size": 3,
+              "title": "Disk Space",
+              "timeContextFromParameter": "timeRange_diskSpace",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+              ]
+            },
+            "name": "query - 11",
+            "styleSettings": {
+              "showBorder": true
+            }
+          }
+        ]
+      },
+      "name": "grp-diskSpace",
+      "styleSettings": {
+        "showBorder": true
+      }
+    }
+  ],
+  "fallbackResourceIds": [
+    "azure monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
