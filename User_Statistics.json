@@ -1,0 +1,206 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "TimeRange",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "value": {
+              "durationMs": 3600000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 604800000
+                }
+              ],
+              "allowCustom": true
+            },
+            "label": "Time Range"
+          },
+          {
+            "id": "Machine",
+            "version": "KqlParameterItem/1.0",
+            "name": "Machine",
+            "label": "Enter Server Name",
+            "type": 1,
+            "value": "*"
+          },
+          {
+            "id": "User",
+            "version": "KqlParameterItem/1.0",
+            "name": "User",
+            "label": "Enter User",
+            "type": 1,
+            "value": "*"
+          },
+          {
+            "id": "Catalog",
+            "version": "KqlParameterItem/1.0",
+            "name": "Catalog",
+            "label": "Enter Catalog Name",
+            "type": 1,
+            "value": "*"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "filters"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\nlet CatalogFilter = iff(\"{Catalog}\" == \"*\" or isempty(\"{Catalog}\"), \"\", \"{Catalog}\");\r\n\r\nuberAgent_Process_ProcessDetail_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| where SessionID_d > 0\r\n| summarize LaunchCount = count() by ProcName_s, ProcUser_s\r\n| top 50 by LaunchCount desc\r\n| project [\"Process\"] = ProcName_s, [\"User\"] = ProcUser_s, LaunchCount\r\n\r\n\r\n",
+        "size": 0,
+        "title": "First Process Launched Per User Per Day",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscrition-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+        ],
+        "visualization": "categoricalbar"
+      },
+      "customWidth": "50",
+      "name": "query - 0",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\nlet CatalogFilter = iff(\"{Catalog}\" == \"*\" or isempty(\"{Catalog}\"), \"\", \"{Catalog}\");\r\n\r\nuberAgent_Process_ProcessDetail_CL\r\n| where SessionID_d > 0\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| summarize AppLaunches = count() by ProcUser_s\r\n| top 10 by AppLaunches desc\r\n| project User = ProcUser_s, AppLaunches\r\n",
+        "size": 0,
+        "title": "Users with the Most Launched Apps",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscrition-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+        ],
+        "visualization": "categoricalbar",
+        "chartSettings": {
+          "showLegend": true
+        }
+      },
+      "customWidth": "50",
+      "name": "query - 2",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\nlet CatalogFilter = iff(\"{Catalog}\" == \"*\" or isempty(\"{Catalog}\"), \"\", \"{Catalog}\");\r\n\r\n\r\nuberAgent_Session_SessionDetail_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or SessionUser_s has UserFilter\r\n| summarize \r\n    [\"Avg. Session Duration (min)\"] = round(avg(datetime_diff(\"minute\", now(), TimeGenerated)), 1),\r\n    [\"Avg. Input Delay (ms)\"] = round(avg(SessionInputDelaySumMs_d / SessionInputDelayCount_d), 1),\r\n    [\"Avg. RTT (ms)\"] = round(avg(SessionRoundTripTimeMs_d), 1),\r\n    [\"Avg. CPU Usage (%)\"] = round(avg(SessionCPUUsagePercent_d), 1),\r\n    [\"Avg. RAM Usage (MB)\"] = round(avg(SessionWorkingSetMB_d), 1),\r\n    [\"#Sessions\"] = count(),\r\n    [\"#Unique Endpoints\"] = dcount(SessionClientName_s)\r\n  by SessionUser_s\r\n| project \r\n    User = SessionUser_s, \r\n    [\"Avg. Session Duration (min)\"], \r\n    [\"Avg. Input Delay (ms)\"], \r\n    [\"Avg. RTT (ms)\"], \r\n    [\"Avg. CPU Usage (%)\"], \r\n    [\"Avg. RAM Usage (MB)\"], \r\n    [\"#Sessions\"], \r\n    [\"#Unique Endpoints\"]\r\n| order by [\"#Sessions\"] desc\r\n\r\n\r\n",
+        "size": 1,
+        "title": "User Experience Scorecard",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscrition-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+        ]
+      },
+      "name": "query - 3"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\n\r\nuberAgent_Application_ApplicationInventory_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| project TimeGenerated, Computer, DisplayName_s, DisplayVersion_s, InstallDate_s, InstallLocation_s, Publisher_s, IsMachineInstall_b, IsMsiPackage_b, Language_s\r\n| sort by TimeGenerated desc\r\n",
+        "size": 0,
+        "title": "Installed Applications Inventory",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscrition-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+        ],
+        "gridSettings": {
+          "labelSettings": [
+            {
+              "columnId": "DisplayName_s",
+              "label": "Display name"
+            },
+            {
+              "columnId": "DisplayVersion_s",
+              "label": "Version"
+            },
+            {
+              "columnId": "InstallDate_s",
+              "label": "Install Date"
+            },
+            {
+              "columnId": "InstallLocation_s",
+              "label": "Path"
+            },
+            {
+              "columnId": "Publisher_s",
+              "label": "Publisher"
+            },
+            {
+              "columnId": "IsMachineInstall_b",
+              "label": "Machine Installed"
+            },
+            {
+              "columnId": "IsMsiPackage_b",
+              "label": "MSI Package"
+            },
+            {
+              "columnId": "Language_s",
+              "label": "Language"
+            }
+          ]
+        }
+      },
+      "name": "query - 4"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\nlet CatalogFilter = iff(\"{Catalog}\" == \"*\" or isempty(\"{Catalog}\"), \"\", \"{Catalog}\");\r\n\r\nuberAgent_Session_SessionDetail_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or SessionUser_s has UserFilter\r\n| summarize \r\n    SessionStart = min(TimeGenerated), \r\n    SessionEnd = max(TimeGenerated) \r\n  by SessionUser_s, SessionGUID_g\r\n| extend SessionDurationMin = datetime_diff(\"minute\", SessionEnd, SessionStart)\r\n| summarize TotalSessionMinutes = sum(SessionDurationMin) by SessionUser_s\r\n| top 10 by TotalSessionMinutes desc\r\n| project User = SessionUser_s, TotalSessionMinutes\r\n",
+        "size": 0,
+        "title": "Top Users by Total Session Time",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscrition-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+        ],
+        "visualization": "barchart"
+      },
+      "name": "query - 5"
+    }
+  ],
+  "fallbackResourceIds": [
+    "azure monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
