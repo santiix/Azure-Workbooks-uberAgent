@@ -86,6 +86,10 @@ Contributions are welcome! Feel free to open a Pull Request if you:
 
 Suggestions, ideas, and improvements are always appreciated!
 
+## 🤝 Special Thanks:
+
+🤝 - Amir Trujillo for finding my first bugs and gettin them resolved on the spot!
+
 ---
 
 ## 📬 Contact
