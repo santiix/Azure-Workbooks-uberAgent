@@ -1,0 +1,462 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "For User Search, use Domain\\User",
+        "style": "info"
+      },
+      "name": "text - 10"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "009c874d-2354-4245-9f61-fed224a8d21d",
+            "version": "KqlParameterItem/1.0",
+            "name": "User",
+            "type": 1,
+            "value": "CTX-LAB\\clo"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "customWidth": "20",
+      "name": "parameters - 0"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "3d49f8df-72a2-4379-88f3-1f6b36667306",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "label": "Time Range",
+            "type": 4,
+            "isRequired": true,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000
+                },
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "value": {
+              "durationMs": 604800000
+            }
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "customWidth": "20",
+      "name": "parameters - 1"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "User Overview",
+        "items": []
+      },
+      "name": "group - Overview",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "uberAgent_Process_ProcessDetail_CL\r\n| where ProcUser_s =~ @\"{User}\"\r\n| project \r\n    TimeGenerated,\r\n    Computer,\r\n    SessionID_d,\r\n    ProcName_s,\r\n    ProcCPUPercent_d,\r\n    ProcIOPSRead_d,\r\n    ProcIOPSWrite_d,\r\n    ProcWorkingSetMB_d,\r\n    ProcNetKBPS_d\r\n| extend \r\n    TotalIOPS = round(ProcIOPSRead_d + ProcIOPSWrite_d, 1),\r\n    CPUPercent = round(ProcCPUPercent_d, 1),\r\n    WorkingSetMB = round(ProcWorkingSetMB_d, 1),\r\n    NetKBPS = round(ProcNetKBPS_d, 1)\r\n| project \r\n    TimeGenerated,\r\n    Computer,\r\n    SessionID_d,\r\n    ProcName_s,\r\n    CPUPercent,\r\n    TotalIOPS,\r\n    WorkingSetMB,\r\n    NetKBPS\r\n| order by CPUPercent desc\r\n\r\n",
+              "size": 0,
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "SessionUser",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SessionProtocols",
+                    "formatter": 5
+                  }
+                ]
+              },
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "SessionUser",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "SessionCount",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              }
+            },
+            "name": "query - 2"
+          }
+        ]
+      },
+      "name": "group - Overview",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "uberAgent_Session_SessionDetail_CL\r\n| where SessionUser_s =~ @\"{User}\"\r\n| join kind=leftouter uberAgent_Logon_LogonDetail_CL on SessionGUID_g\r\n| summarize \r\n    arg_max(TimeGenerated,Computer),\r\n    arg_max(TimeGenerated,SessionGUID_g),\r\n    arg_max(TimeGenerated,SessionID_d),\r\n    arg_max(TimeGenerated,SessionProtocol_s),\r\n    arg_max(TimeGenerated,SessionConnectionState_s),\r\n    make_set(SessionClientName_s,10),\r\n    arg_max(TimeGenerated,TimeGenerated),\r\n    arg_max(TimeGenerated, SessionLogonTime_s),\r\n    AvgSessionProcessCount = avg(SessionProcessCount_d),\r\n    AvgSessionCPUUsagePercent = avg(SessionCPUUsagePercent_d),\r\n    AvgSessionIOPS = avg(SessionIOPS_d),\r\n    AvgSessionWorkingSetMB = avg(SessionWorkingSetMB_d),\r\n    AvgSessionNetKBPS = avg(SessionNetKBPS_d),\r\n    AvgSessionRpLatencyMs = avg(SessionRpLatencyMs2_d),\r\n    AvgSessionRoundTripTimeMs = avg(SessionRoundTripTimeMs_d),\r\n    SumSessionIOCount = sum(SessionIOCount_d),\r\n    TotalLogonTimeMs = sum(TotalLogonTimeMs_d)\r\nby SessionGUID_g\r\n|project \r\nSessionGUID = SessionGUID_g,\r\nHost = Computer,\r\nID = SessionID_d,\r\n[\"Logon time\"] = SessionLogonTime_s,\r\n[\"Logon duration (s)\"] = round(TotalLogonTimeMs/1000,2),\r\n[\"Last seen\"] = TimeGenerated,\r\n[\"Last state\"] = SessionConnectionState_s,\r\n[\"Protocol\"] = SessionProtocol_s,\r\n[\"Avg. #processes\"] = round(AvgSessionProcessCount),\r\n[\"Avg. CPU (%)\"] =round( AvgSessionCPUUsagePercent,1),\r\n[\"Avg. IOPS\"] = round(AvgSessionIOPS,1),\r\n[\"Avg. IO latency (ms)\"] = iff(isnan(round(AvgSessionRpLatencyMs/SumSessionIOCount,1)),'n/a',tostring(round(AvgSessionRpLatencyMs/SumSessionIOCount,1))),\r\n[\"Avg. RAM (MB)\"] = round(AvgSessionWorkingSetMB),\r\n[\"Avg. network (KB/s)\"] = round(AvgSessionNetKBPS,1),\r\n[\"Avg. ICA latency (ms)\"] = iff(isnan(AvgSessionRoundTripTimeMs),'n/a',tostring(round(AvgSessionRoundTripTimeMs,1))),\r\n[\"Remoting clients\"] = set_SessionClientName_s\r\n| sort by ['Logon time'] desc ",
+              "size": 3,
+              "title": "Sessions",
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "filter": true
+              }
+            },
+            "name": "query - 3"
+          }
+        ]
+      },
+      "name": "group - sessions",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "uberAgent_CitrixSession_SessionConfig_CL\r\n|where SessionUser_s =~ @\"{User}\"\r\n| join kind=leftouter uberAgent_Session_SessionDetail_CL on SessionGUID_g\r\n| summarize \r\n    arg_max(TimeGenerated,CdmVolumes_s),\r\n    arg_max(TimeGenerated,DisplayMode_d),\r\n    arg_max(TimeGenerated,ThinwireColorDepth_d),\r\n    arg_max(TimeGenerated,ThinwireComponentEncoder_s),\r\n    arg_max(TimeGenerated,ThinwireHardwareEncodeInUse_b),\r\n    arg_max(TimeGenerated,ThinwireVideoCodecType_s),\r\n    arg_max(TimeGenerated,ThinwireColorspace_s),\r\n    arg_max(TimeGenerated,ThinwireVideoCodecUse_s),\r\n    arg_max(TimeGenerated,NetworkConnectedVia_s),\r\n    arg_max(TimeGenerated,PrinterSessionPrinter_s),\r\n    arg_max(TimeGenerated,AudioActualPriority_s),\r\n    arg_max(TimeGenerated,CdmActualPriority_s),\r\n    arg_max(TimeGenerated,PrinterActualPriority_s),\r\n    arg_max(TimeGenerated,USBActualPriority_s),\r\n    arg_max(TimeGenerated,ThinwireActualPriority_s),\r\n    arg_max(TimeGenerated,SessionUser_s),\r\n    arg_max(TimeGenerated,Computer),\r\n    arg_max(TimeGenerated,SessionTransportProtocols_s)\r\nby SessionUser_s\r\n| project \r\n[\"Mapped volumes\"] = replace_string(CdmVolumes_s, \";\",\" , \"),\r\n[\"Display mode\" ] = DisplayMode_d,\r\n[\"Thinwire color depth (bit)\"] = ThinwireColorDepth_d,\r\n[\"Thinwire component encoder\"] = ThinwireComponentEncoder_s,\r\n[\"Thinwire hardware encode\"] = ThinwireHardwareEncodeInUse_b,\r\n[\"Thinwire video codec type\"] = ThinwireVideoCodecType_s,\r\n[\"Thinwire color space\"] = ThinwireColorspace_s,\r\n[\"Thinwire video codec usage\"] = ThinwireVideoCodecUse_s,\r\n[\"Connected via\"] = NetworkConnectedVia_s,\r\n[\"Mapped printers\"] = replace_string(PrinterSessionPrinter_s, \";\",\" , \"),\r\n[\"Audio channel actual priority\"] = AudioActualPriority_s,\r\n[\"CDM channel actual priority\"] = CdmActualPriority_s,\r\n[\"Printer channel actual priority\"] = PrinterActualPriority_s,\r\n[\"USB channel actual priority\"] = USBActualPriority_s,\r\n[\"Thinwire channel actual priority\"] = ThinwireActualPriority_s,\r\n[\"Transport protocols\"] = SessionTransportProtocols_s,\r\nUser = SessionUser_s,\r\nHost = Computer\r\n| evaluate narrow()\r\n| project Column, Value",
+              "size": 3,
+              "title": "Citrix settings (last seen values)",
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+              ],
+              "gridSettings": {
+                "labelSettings": [
+                  {
+                    "columnId": "Column",
+                    "label": "Setting"
+                  },
+                  {
+                    "columnId": "Value",
+                    "label": "Value"
+                  }
+                ]
+              }
+            },
+            "name": "query - 5"
+          }
+        ]
+      },
+      "name": "group - Settings",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "uberAgent_CitrixSession_SessionConfig_CL\r\n|where SessionUser_s == @\"JVR4J\\administrator\"\r\n| join kind=leftouter uberAgent_Session_SessionDetail_CL on SessionGUID_g\r\n| summarize \r\narg_max(TimeGenerated,AudioPolicyAllowMicrophoneRedirection_b),\r\narg_max(TimeGenerated,AudioPolicyAllowRedirection_b),\r\narg_max(TimeGenerated,AudioPolicyPriority_s),\r\narg_max(TimeGenerated,AudioPolicySoundQuality_s),\r\narg_max(TimeGenerated,CdmPolicyAllowDriveRedirection_b),\r\narg_max(TimeGenerated,CdmPolicyReadOnly_b),\r\narg_max(TimeGenerated,CdmPolicyPriority_s),\r\narg_max(TimeGenerated,ThinwirePolicyFps_d),\r\narg_max(TimeGenerated,ThinwirePolicyPriority_s),\r\narg_max(TimeGenerated,ThinwirePolicyUseHardwareEncoding_b),\r\narg_max(TimeGenerated,ThinwirePolicyUseVideoCodec_s),\r\narg_max(TimeGenerated,ThinwirePolicyVisualQuality_s),\r\narg_max(TimeGenerated,NetworkPolicyAcceptSessionReliabilityConnections_b),\r\narg_max(TimeGenerated,NetworkPolicySessionReliabilityPort_d),\r\narg_max(TimeGenerated,NetworkPolicySessionReliabilityTimeout_d),\r\narg_max(TimeGenerated,NetworkPolicyICAListenerPortNumber_d),\r\narg_max(TimeGenerated,PrinterPolicyAllowRedirection_b),\r\narg_max(TimeGenerated,PrinterPolicyAutoCreateClientPrinters_d),\r\narg_max(TimeGenerated,PrinterPolicyPriority_s),\r\narg_max(TimeGenerated,USBPolicyAllowPNPRedirection_b),\r\narg_max(TimeGenerated,USBPolicyAllowUSBSupport_b),\r\narg_max(TimeGenerated,USBPolicyPriority_s),\r\narg_max(TimeGenerated,SessionUser_s),\r\narg_max(TimeGenerated,Computer),\r\narg_max(TimeGenerated,SessionLogonTime_s)\r\nby SessionUser_s\r\n| project \r\n[\"Microphone redirection\"]= AudioPolicyAllowMicrophoneRedirection_b,\r\n[\"Audio redirection\"]= AudioPolicyAllowRedirection_b,\r\n[\"Audio channel priority\"]= AudioPolicyPriority_s,\r\n[\"Sound quality\"]= AudioPolicySoundQuality_s,\r\n[\"Client drive mapping\"]= CdmPolicyAllowDriveRedirection_b,\r\n[\"Read-only client drive access\"]= CdmPolicyReadOnly_b,\r\n[\"CDM channel priority\"]= CdmPolicyPriority_s,\r\n[\"Thinwire FPS\"]= toint(ThinwirePolicyFps_d),\r\n[\"Thinwire channel priority\"]= ThinwirePolicyPriority_s,\r\n[\"Thinwire hardware encoding\"]= ThinwirePolicyUseHardwareEncoding_b,\r\n[\"Thinwire video codec\"]= ThinwirePolicyUseVideoCodec_s,\r\n[\"Thinwire visual quality\"]= ThinwirePolicyVisualQuality_s,\r\n[\"Session reliability connections\"]= NetworkPolicyAcceptSessionReliabilityConnections_b,\r\n[\"Session reliability port\"]= toint(NetworkPolicySessionReliabilityPort_d),\r\n[\"Session reliability timeout (s)\"]= toint(NetworkPolicySessionReliabilityTimeout_d),\r\n[\"ICA listener port\"]= toint(NetworkPolicyICAListenerPortNumber_d),\r\n[\"Printer redirection\"]= PrinterPolicyAllowRedirection_b,\r\n[\"Printer channel priority\"]= PrinterPolicyPriority_s,\r\n[\"Auto-create client printers\"]= toint(PrinterPolicyAutoCreateClientPrinters_d),\r\n[\"USB PNP redirection\"]= USBPolicyAllowPNPRedirection_b,\r\n[\"USB support\"]= USBPolicyAllowUSBSupport_b,\r\n[\"USB channel priority\"]= USBPolicyPriority_s,\r\n[\"Logon time\"]=SessionLogonTime_s,\r\nUser = SessionUser_s,\r\nHost = Computer\r\n| evaluate narrow()\r\n| project Column, Value\r\n| extend Value = case(Value == \"true\", \"Allowed\", Value == \"false\", \"Disallowed\", Value)",
+              "size": 3,
+              "title": "Citrix policies (last seen values)",
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+              ],
+              "gridSettings": {
+                "labelSettings": [
+                  {
+                    "columnId": "Column",
+                    "label": "Policy"
+                  },
+                  {
+                    "columnId": "Value",
+                    "label": "Value"
+                  }
+                ]
+              }
+            },
+            "name": "Citrix policies (last seen values)"
+          }
+        ]
+      },
+      "name": "group - Policies",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Network Data",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "uberAgent_Process_NetworkTargetPerformance_CL\r\n| where ProcUser_s =~ @\"{User}\"\r\n| summarize \r\n    [\"Send Volume (MB)\"]=sum(NetTargetSendMB_d),\r\n    [\"Receive volume (MB)\"]=sum(NetTargetReceiveMB_d)\r\n    by TimeGenerated, period = bin(TimeGenerated, 1h)\r\n| project period, ['Send Volume (MB)'], [\"Receive volume (MB)\"]",
+              "size": 0,
+              "title": "Network data - Send Volume over time",
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+              ],
+              "visualization": "barchart",
+              "chartSettings": {
+                "showMetrics": false,
+                "showLegend": true
+              }
+            },
+            "name": "query - 6"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "uberAgent_Process_NetworkTargetPerformance_CL\r\n| where ProcUser_s =~ @\"{User}\"\r\n| summarize \r\n    [\"Avg Send Latency\"]=iff(isnan(avg(NetTargetSendLatencyMs_d)),0.0,avg(NetTargetSendLatencyMs_d))\r\n    by TimeGenerated, period = bin(TimeGenerated, 1h)\r\n| project period, [\"Avg Send Latency\"]",
+              "size": 0,
+              "aggregation": 2,
+              "title": "Network data - Average Send Latency",
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+              ],
+              "visualization": "linechart",
+              "chartSettings": {
+                "showMetrics": false,
+                "showLegend": true
+              }
+            },
+            "name": "query - 9"
+          }
+        ]
+      },
+      "customWidth": "50",
+      "name": "group - 10",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "CPU and RAM over time",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "uberAgent_Process_ProcessDetail_CL\r\n| where ProcUser_s =~ @\"{User}\"\r\n| summarize \r\n    [\"Avg. RAM (MB)\"]=round(sum(ProcWorkingSetMB_d),1)\r\n    by TimeGenerated, period = bin(TimeGenerated, 1h)\r\n| project period, ['Avg. RAM (MB)']",
+              "size": 0,
+              "aggregation": 3,
+              "title": "RAM over time",
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+              ],
+              "visualization": "barchart",
+              "chartSettings": {
+                "showMetrics": false,
+                "showLegend": true
+              }
+            },
+            "name": "query - 10"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "uberAgent_Process_ProcessDetail_CL\r\n| where ProcUser_s =~ @\"{User}\"\r\n| summarize \r\n    [\"Avg. CPU (%)\"]=round(sum(ProcCPUPercent_d),1)\r\n    by TimeGenerated, period = bin(TimeGenerated, 1h)\r\n| project period, ['Avg. CPU (%)']",
+              "size": 0,
+              "aggregation": 3,
+              "title": "CPU over time",
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+              ],
+              "visualization": "linechart",
+              "chartSettings": {
+                "showMetrics": false,
+                "showLegend": true
+              }
+            },
+            "name": "query - 7"
+          }
+        ]
+      },
+      "customWidth": "50",
+      "name": "CPU and Memory",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let ProcDetails = uberAgent_Process_ProcessDetail_CL\r\n| where ProcUser_s =~ @\"{User}\"\r\n|  summarize\r\n    processNames = make_set(ProcName_s,20),\r\n    sum(ProcCPUPercent_d),\r\n    sum(ProcIOPSRead_d),\r\n    sum(ProcIOReadCount_d),\r\n    sum(ProcWorkingSetMB_d),\r\n    sum(ProcNetKBPS_d),\r\n    sum(ProcIOLatencyReadMs2_d),\r\n    sum(ProcIOLatencyWriteMs2_d)\r\n    by AppId_s, TimeGenerated, Computer\r\n| summarize \r\n    [\"Process name(s)\"]= make_set(processNames,20),\r\n    AvgProcCPUPercent = avg(sum_ProcCPUPercent_d),\r\n    AvgProcIOPS = avg(sum_ProcIOPSRead_d),\r\n    SumProcIOCount = sum(sum_ProcIOReadCount_d),\r\n    AvgProcWorkingSetMB = sum(sum_ProcWorkingSetMB_d),\r\n    AvgProcNetKBPS = avg(sum_ProcNetKBPS_d)\r\n    by AppId_s;\r\n\r\n\r\n\r\nlet uiDelayDetails = uberAgent_Application_UIDelay_CL\r\n| where User_s == @\"{User}\"\r\n| summarize\r\n    UIDelayMs = sum(UIDelayMs_d)\r\n    by AppId_s;\r\n\r\nlet latencyDetails = uberAgent_Process_NetworkTargetPerformance_CL\r\n| where ProcUser_s == @\"{User}\"\r\n| summarize\r\n    Latency = avg(NetTargetSendLatencyMs_d)\r\n    by AppId_s;\r\n\r\n\r\n\r\nProcDetails\r\n| join kind=leftouter uiDelayDetails on AppId_s\r\n| join kind=leftouter latencyDetails on AppId_s\r\n| project\r\n    [\"App Name\"] = AppId_s,\r\n    [\"Process name(s)\"] = tostring([\"Process name(s)\"]),\r\n    [\"Avg. CPU (%)\"] = round(AvgProcCPUPercent, 1),\r\n    [\"Avg. IOPS\"] = round (AvgProcIOPS,1),\r\n    [\"Avg. RAM (MB)\"] = round(AvgProcWorkingSetMB, 0),\r\n    [\"Avg. net thruput (KB/s)\"] = round (AvgProcNetKBPS,1),\r\n    [\"Avg. net latency (ms)\"] = iff(isnan(round(Latency,1)),\"n/a\",tostring(round(Latency,1))),\r\n    [\"UI unresponsiveness (s)\"] = round(UIDelayMs/1000,1)\r\n| sort by tolower([\"App Name\"]) asc;\r\n",
+              "size": 0,
+              "title": "Applications",
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Process name(s)",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "87.7143ch"
+                    }
+                  }
+                ]
+              }
+            },
+            "name": "query - 8"
+          }
+        ]
+      },
+      "name": "group - Processes",
+      "styleSettings": {
+        "showBorder": true
+      }
+    }
+  ],
+  "fallbackResourceIds": [
+    "azure monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
