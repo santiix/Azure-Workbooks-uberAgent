@@ -19,7 +19,7 @@
             "version": "KqlParameterItem/1.0",
             "name": "User",
             "type": 1,
-            "value": "CTX-LAB\\clo"
+            "value": "*"
           }
         ],
         "style": "pills",
