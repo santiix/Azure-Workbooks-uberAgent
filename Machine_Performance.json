@@ -1,0 +1,204 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "TimeRange",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 604800000
+                }
+              ],
+              "allowCustom": true
+            },
+            "label": "Time Range",
+            "value": {
+              "durationMs": 1800000
+            }
+          },
+          {
+            "id": "Machine",
+            "version": "KqlParameterItem/1.0",
+            "name": "Machine",
+            "label": "Enter Server Name",
+            "type": 1,
+            "isRequired": true,
+            "value": "*"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "filters"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\nuberAgent_System_SystemPerformanceSummary2_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| summarize AvgCPU=avg(CPUUsagePercent_d) by bin(TimeGenerated, 5m)\n| render timechart",
+        "size": 1,
+        "aggregation": 3,
+        "title": "CPU Usage Over Time",
+        "color": "orange",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "unstackedbar"
+      },
+      "customWidth": "50",
+      "name": "CPUUsage",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\nuberAgent_System_SystemPerformanceSummary2_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| summarize AvgFreq=avg(CPURelativeFrequencyPercent_d) by bin(TimeGenerated, 5m)\n| render timechart",
+        "size": 1,
+        "aggregation": 3,
+        "title": "CPU Relative Frequency (%)",
+        "color": "green",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "unstackedbar"
+      },
+      "customWidth": "50",
+      "name": "CPUFreq",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\nuberAgent_System_SystemPerformanceSummary2_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| summarize AvgRAM=avg(RAMUsagePercent_d) by bin(TimeGenerated, 5m)\n| render timechart",
+        "size": 1,
+        "aggregation": 3,
+        "title": "RAM Usage (%)",
+        "color": "lightBlue",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "barchart"
+      },
+      "customWidth": "50",
+      "name": "RAMUsage",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\nuberAgent_System_SystemPerformanceSummary2_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| summarize AvgDisk=avg(IOPercentDiskTime_d) by bin(TimeGenerated, 5m)\n| render timechart",
+        "size": 1,
+        "aggregation": 3,
+        "title": "Disk Usage (%)",
+        "color": "yellow",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "barchart"
+      },
+      "customWidth": "50",
+      "name": "DiskUsage",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\nuberAgent_System_SystemPerformanceSummary2_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| summarize AvgNet=avg(NetUtilizationPercent_d) by bin(TimeGenerated, 5m)\n| render timechart",
+        "size": 1,
+        "aggregation": 3,
+        "title": "Network Utilization (%)",
+        "color": "magenta",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "barchart"
+      },
+      "customWidth": "50",
+      "name": "NetUsage",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\nuberAgent_System_SystemPerformanceSummary2_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| summarize AvgHandles=avg(HandleCount_d), AvgThreads=avg(ThreadCount_d) by bin(TimeGenerated, 5m)\n| render timechart",
+        "size": 1,
+        "aggregation": 3,
+        "title": "Handles and Threads",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "unstackedbar"
+      },
+      "customWidth": "50",
+      "name": "HandlesThreads",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\nuberAgent_System_SystemPerformanceSummary2_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| summarize AvgPaged=avg(KernelPagedMB_d), AvgNonPaged=avg(KernelNonPagedMB_d) by bin(TimeGenerated, 5m)\n| render timechart",
+        "size": 1,
+        "aggregation": 3,
+        "title": "Paged vs Non-Paged Pool (MB)",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "timechart"
+      },
+      "name": "PagedPools"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet PerfData = \r\n    uberAgent_System_SystemPerformanceSummary2_CL\r\n    | where TimeGenerated >= ago(7d)  // Time range handled by parameter\r\n    | where isempty(MachineFilter) or Computer has MachineFilter\r\n    | summarize\r\n        [\"Avg. CPU (%)\"] = round(avg(CPUUsagePercent_d), 2),\r\n        [\"Avg. CPU rel. frequency (%)\"] = round(avg(CPURelativeFrequencyPercent_d), 2),\r\n        [\"Avg. IOPS\"] = round(avg(IOPSRead_d + IOPSWrite_d), 2),\r\n        [\"Avg. % disk time\"] = round(avg(IOPercentDiskTime_d), 2),\r\n        [\"Avg. IO latency (ms)\"] = round(avg(IOLatencyMsRead_d + IOLatencyMsWrite_d), 2),\r\n        [\"Avg. RAM (GB)\"] = round(avg(RAMUsageGB_d), 2),\r\n        [\"Avg. RAM (%)\"] = round(avg(RAMUsagePercent_d), 2),\r\n        [\"Avg. network (%)\"] = round(avg(NetUtilizationPercent_d), 2),\r\n        [\"Avg. paged pool (MB)\"] = round(avg(KernelPagedMB_d), 2),\r\n        [\"Avg. non-paged pool (MB)\"] = round(avg(KernelNonPagedMB_d), 2),\r\n        [\"Avg. #handles\"] = round(avg(HandleCount_d), 2),\r\n        [\"Avg. #threads\"] = round(avg(ThreadCount_d), 2)\r\n    by Computer;\r\n\r\nlet LatestInventory =\r\n    uberAgent_System_MachineInventory_CL\r\n    | summarize arg_max(TimeGenerated, HwModel_s) by Computer;\r\n\r\nPerfData\r\n| join kind=leftouter (LatestInventory) on Computer\r\n| project [\"Hardware model\"] = HwModel_s, Computer, \r\n    [\"Avg. CPU (%)\"], [\"Avg. CPU rel. frequency (%)\"], [\"Avg. IOPS\"], [\"Avg. % disk time\"],\r\n    [\"Avg. IO latency (ms)\"], [\"Avg. RAM (GB)\"], [\"Avg. RAM (%)\"], [\"Avg. network (%)\"],\r\n    [\"Avg. paged pool (MB)\"], [\"Avg. non-paged pool (MB)\"], [\"Avg. #handles\"], [\"Avg. #threads\"]\r\n| order by [\"Avg. CPU (%)\"] desc\r\n",
+        "size": 1,
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "table"
+      },
+      "name": "query - 8"
+    }
+  ],
+  "defaultResourceIds": [
+    "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
