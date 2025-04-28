@@ -61,8 +61,10 @@ The goal is to help others:
 
 1. Import the JSON files directly into Azure Monitor Workbooks.
 2. Connect to your Log Analytics Workspace where uberAgent is sending data.
-3. Adjust any parameters (like `TimeRange`, `Machine`, or `User`) in the workbook views.
-4. Start analyzing and customizing the dashboards as needed!
+3. Enter your Azure Subscriotion and Resource Group names in the configuration section of the files:
+   "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group_Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+4. Adjust any parameters (like `TimeRange`, `Machine`, or `User`) in the workbook views.
+5. Start analyzing and customizing the dashboards as needed!
 
 > **Requirements:**
 > - Azure Subscription with Monitor and Log Analytics enabled.
