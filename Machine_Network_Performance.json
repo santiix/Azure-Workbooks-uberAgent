@@ -1,0 +1,171 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "TimeRange",
+            "name": "TimeRange",
+            "type": 4,
+            "value": {
+              "durationMs": 604800000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 604800000
+                }
+              ],
+              "allowCustom": true
+            },
+            "label": "Time Range"
+          },
+          {
+            "id": "Machine",
+            "name": "Machine",
+            "type": 1,
+            "label": "Enter Server Name",
+            "isRequired": true,
+            "value": "*"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "filters"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\r\nuberAgent_Process_NetworkTargetPerformance_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| summarize\r\n    NetworkAvailability = round(100 - (100.0 * sum(NetTargetRetransmitCount_d)) / (sum(NetTargetRetransmitCount_d + NetTargetSendCount_d)), 2),\r\n    PacketLoss = round((100.0 * sum(NetTargetRetransmitCount_d)) / (sum(NetTargetRetransmitCount_d + NetTargetSendCount_d)), 2),\r\n    Jitter = round(sum(NetTargetSendJitterMs_d) / sum(NetTargetSendJitterCount_d), 2),\r\n    FailureCount = countif(NetTargetSendLatencyMs_d == 0),\r\n    TargetCount = dcount(NetTargetRemoteName_s),\r\n    PortCount = dcount(NetTargetRemotePort_d),\r\n    AppCount = dcount(AppId_s)\r\n| project \r\n    [\"Network availability (%)\"] = NetworkAvailability, \r\n    [\"Packet loss (%)\"] = PacketLoss, \r\n    [\"Jitter (ms)\"] = Jitter, \r\n    [\"# Failed connections\"] = FailureCount, \r\n    [\"# Target hosts\"] = TargetCount, \r\n    [\"# Target ports\"] = PortCount, \r\n    [\"# Apps\"] = AppCount\r\n",
+        "size": 1,
+        "title": "Overview",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "table",
+        "tileSettings": {
+          "showBorder": false
+        },
+        "mapSettings": {
+          "locInfo": "LatLong",
+          "sizeSettings": "Network availability (%)",
+          "sizeAggregation": "Sum",
+          "legendMetric": "Network availability (%)",
+          "legendAggregation": "Sum",
+          "itemColorSettings": {
+            "type": "heatmap",
+            "colorAggregation": "Sum",
+            "nodeColorField": "Network availability (%)",
+            "heatmapPalette": "greenRed"
+          }
+        }
+      },
+      "name": "query - 6"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\nuberAgent_Process_NetworkTargetPerformance_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| summarize SendMB=round(sum(NetTargetSendMB_d), 2),\n            ReceiveMB=round(sum(NetTargetReceiveMB_d), 2),\n            TotalMB=round(sum(NetTargetSendMB_d + NetTargetReceiveMB_d), 2)\n  by Computer\n| top 10 by TotalMB desc\n| render columnchart",
+        "size": 1,
+        "aggregation": 3,
+        "title": "Top 10 Servers by Total Network Data Volume (MB)",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "columnchart"
+      },
+      "customWidth": "50",
+      "name": "TopDataVolume",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\nuberAgent_Process_NetworkTargetPerformance_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| summarize Latency=round(sum(NetTargetSendLatencyMs_d)/sum(NetTargetSendLatencyCount_d), 2) by Computer\n| top 10 by Latency desc\n| render columnchart",
+        "size": 1,
+        "title": "Top 10 Servers by Avg. TCP Send Latency (ms)",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "columnchart"
+      },
+      "customWidth": "50",
+      "name": "TopLatency",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\nuberAgent_Process_NetworkTargetPerformance_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| summarize SendMB=sum(NetTargetSendMB_d), ReceiveMB=sum(NetTargetReceiveMB_d) by bin(TimeGenerated, 5m)\n| render timechart",
+        "size": 1,
+        "aggregation": 3,
+        "title": "Network Data Volume Over Time (MB)",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "timechart"
+      },
+      "customWidth": "50",
+      "name": "NetworkOverTime",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\nuberAgent_Process_NetworkTargetPerformance_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| summarize AvgLatency=round(sum(NetTargetSendLatencyMs_d)/sum(NetTargetSendLatencyCount_d), 2) by bin(TimeGenerated, 5m)\n| render timechart",
+        "size": 1,
+        "aggregation": 3,
+        "title": "TCP Send Latency Over Time (ms)",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "timechart"
+      },
+      "customWidth": "50",
+      "name": "LatencyOverTime",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\nuberAgent_Process_NetworkTargetPerformance_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| summarize \n    SendMB=round(sum(NetTargetSendMB_d), 2),\n    ReceiveMB=round(sum(NetTargetReceiveMB_d), 2),\n    Jitter=round(sum(NetTargetSendJitterMs_d)/sum(NetTargetSendJitterCount_d), 2),\n    Latency=round(sum(NetTargetSendLatencyMs_d)/sum(NetTargetSendLatencyCount_d), 2),\n    PacketLoss=round((100.0 * sum(NetTargetRetransmitCount_d)) / (sum(NetTargetRetransmitCount_d + NetTargetSendCount_d)), 2),\n    Sends=sum(NetTargetSendCount_d),\n    Receives=sum(NetTargetReceiveCount_d),\n    Reconnects=sum(NetTargetReconnectCount_d),\n    Connects=sum(NetTargetConnectCount_d)\n  by Computer\n| order by Latency desc",
+        "size": 1,
+        "title": "Server Network Communication Summary",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "table"
+      },
+      "name": "NetworkSummaryTable"
+    }
+  ],
+  "defaultResourceIds": [
+    "/subscriptions/<Azure-Subscrition-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
