@@ -141,7 +141,7 @@
     }
   ],
   "defaultResourceIds": [
-    "/subscriptions/<Azure-Subscrition-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+    "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
   ],
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
 }
