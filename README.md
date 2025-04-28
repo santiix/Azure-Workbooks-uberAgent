@@ -61,7 +61,7 @@ The goal is to help others:
 
 1. Import the JSON files directly into Azure Monitor Workbooks.
 2. Connect to your Log Analytics Workspace where uberAgent is sending data.
-3. Enter your Azure Subscriotion and Resource Group names in the configuration section of the files:
+3. Enter your Azure Subscription and Resource Group names in the configuration section of the files:
    "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group_Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
 4. Adjust any parameters (like `TimeRange`, `Machine`, or `User`) in the workbook views.
 5. Start analyzing and customizing the dashboards as needed!
@@ -69,7 +69,7 @@ The goal is to help others:
 > **Requirements:**
 > - Azure Subscription with Monitor and Log Analytics enabled.
 > - uberAgent configured to send logs to Azure Monitor (Log Analytics Workspace).
-
+   > - https://docs.citrix.com/en-us/uberagent/7-3-1/installation/backend/configuring-microsoft-azure-oms-log-analytics
 ---
 
 ## 🤝 Contributions
