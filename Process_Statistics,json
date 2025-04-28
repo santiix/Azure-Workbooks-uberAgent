@@ -1,0 +1,179 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "TimeRange",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "value": {
+              "durationMs": 604800000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 604800000
+                }
+              ],
+              "allowCustom": true
+            },
+            "label": "Time Range"
+          },
+          {
+            "id": "Machine",
+            "version": "KqlParameterItem/1.0",
+            "name": "Machine",
+            "label": "Enter Server Name",
+            "type": 1,
+            "isRequired": true,
+            "value": "*"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "filters"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\nuberAgent_Process_ProcessStartup_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| summarize \n    SumStartupIOCount = sum(StartupIOPS_d),\n    SumStartupTimeS = sum(StartupTimeMs_d),\n    CountProcessStartup = count(),\n    UniqueProcesses = dcount(ProcName_s)\n| extend \n    AvgStartupIOCount = round(SumStartupIOCount / CountProcessStartup, 1),\n    AvgStartupDurationS = round(SumStartupTimeS / CountProcessStartup / 1000.0, 1)\n| project UniqueProcesses, CountProcessStartup, AvgStartupDurationS, AvgStartupIOCount",
+        "size": 4,
+        "title": "Process Startup Overview",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "table"
+      },
+      "name": "ProcessStartupOverview"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\nlet startup = \n    uberAgent_Process_ProcessStartup_CL\n    | where isempty(MachineFilter) or Computer has MachineFilter\n    | summarize \n        SumStartupIOCount = sum(StartupIOPS_d),\n        CountProcessStartup = count()\n      by AppId_s, ProcName_s;\nstartup\n| join kind=leftouter (\n    uberAgent_Application_AppNameIdMapping_CL\n    | project AppId_s, AppName = AppName_s\n) on AppId_s\n| extend AvgStartupIOCount = round(SumStartupIOCount / CountProcessStartup, 2)\n| summarize TotalIO = sum(SumStartupIOCount), Processes = make_list(ProcName_s) by AppName\n| top 10 by TotalIO desc",
+        "size": 0,
+        "title": "Top Applications with Startup IO Grouped by Processes",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "categoricalbar"
+      },
+      "name": "StartupByAppProcess"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\nlet startup = \n    uberAgent_Process_ProcessStartup_CL\n    | where isempty(MachineFilter) or Computer has MachineFilter\n    | summarize \n        SumStartupTimeMs = sum(StartupTimeMs_d),\n        CountProcessStartup = count()\n      by AppId_s, ProcName_s;\nstartup\n| join kind=leftouter (\n    uberAgent_Application_AppNameIdMapping_CL\n    | project AppId_s, AppName = AppName_s\n) on AppId_s\n| extend AvgStartupDurationS = round(SumStartupTimeMs / CountProcessStartup / 1000.0, 2)\n| summarize TotalAvg = avg(AvgStartupDurationS), Processes = make_list(ProcName_s) by AppName\n| top 10 by TotalAvg desc",
+        "size": 0,
+        "title": "Top Applications by Avg. Startup Duration Grouped by Processes",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "categoricalbar"
+      },
+      "name": "StartupByAppDurationProcess"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\nlet ProcessData = \n    uberAgent_Process_ProcessStartup_CL\n    | where isempty(MachineFilter) or Computer has MachineFilter\n    | project TimeGenerated, AppId_s, ProcName_s, StartupTimeMs_d, StartupIOPS_d, ProcUser_s, Computer\n    | extend StartupTimeS = round(StartupTimeMs_d / 1000.0, 2);\nlet AppMap = \n    uberAgent_Application_AppNameIdMapping_CL\n    | summarize AppName = any(AppName_s) by AppId_s;\nProcessData\n| join kind=leftouter (AppMap) on AppId_s\n| summarize\n    TotalStartups = count(),\n    AvgStartupTimeS = round(avg(StartupTimeS), 2),\n    AvgIOPS = round(avg(StartupIOPS_d), 2),\n    Users = dcount(ProcUser_s),\n    Hosts = dcount(Computer)\n    by AppName, ProcName_s\n| sort by AvgStartupTimeS desc\n",
+        "size": 0,
+        "title": "Detailed Process Startup Table",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "table"
+      },
+      "name": "StartupTable"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\nuberAgent_Process_ProcessStartup_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| summarize AvgStartupTimeS = avg(StartupTimeMs_d) by bin(TimeGenerated, 1h)\n| extend AvgStartupTimeS = round(AvgStartupTimeS / 1000.0, 2)\n| render timechart",
+        "size": 0,
+        "title": "Startup Duration Trend Over Time",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "timechart"
+      },
+      "name": "StartupTrends"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\n\r\nuberAgent_Process_NetworkTargetPerformance_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| summarize \r\n    Reconnects = sum(NetTargetReconnectCount_d),\r\n    Retransmits = sum(NetTargetRetransmitCount_d)\r\n    by bin(TimeGenerated, 1h), ProcName_s\r\n| mv-expand MetricName = dynamic([\"Reconnects\", \"Retransmits\"])\r\n| extend Value = case(\r\n    MetricName == \"Reconnects\", todouble(Reconnects),\r\n    MetricName == \"Retransmits\", todouble(Retransmits),\r\n    0.0\r\n)\r\n| project TimeGenerated, MetricLabel = strcat(MetricName, \" - \", ProcName_s), Value\r\n| render columnchart\r\n",
+        "size": 0,
+        "title": "Process Network Reconnects & Retransmits Over Time",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "barchart",
+        "chartSettings": {
+          "showLegend": true
+        }
+      },
+      "name": "query - 6"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\n\r\nlet Foreground = \r\n    uberAgent_Session_SessionDetail_CL\r\n    | project TimeGenerated, Computer, SessionID_d, ForegroundProcess = SessionFgProcessName_s;\r\n\r\nuberAgent_Process_ProcessDetail_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| join kind=leftouter (Foreground) on Computer, SessionID_d\r\n| where ProcName_s != ForegroundProcess\r\n| summarize \r\n    [\"Avg. CPU (%)\"] = round(avg(ProcCPUPercent_d), 2),\r\n    [\"Avg. RAM (MB)\"] = round(avg(ProcWorkingSetMB_d), 2),\r\n    Sessions = dcount(SessionID_d),\r\n    Hosts = dcount(Computer),\r\n    Users = dcount(ProcUser_s)\r\n    by ProcName_s\r\n| top 10 by [\"Avg. CPU (%)\"] desc\r\n| project Process = ProcName_s, [\"Avg. CPU (%)\"], [\"Avg. RAM (MB)\"], Sessions, Hosts, Users\r\n",
+        "size": 0,
+        "title": "Background Process Resource Hogs",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "table",
+        "tileSettings": {
+          "showBorder": false,
+          "titleContent": {
+            "columnMatch": "Process",
+            "formatter": 1
+          },
+          "leftContent": {
+            "columnMatch": "Avg. CPU (%)",
+            "formatter": 12,
+            "formatOptions": {
+              "palette": "auto"
+            },
+            "numberFormat": {
+              "unit": 17,
+              "options": {
+                "maximumSignificantDigits": 3,
+                "maximumFractionDigits": 2
+              }
+            }
+          }
+        }
+      },
+      "name": "query - 7"
+    }
+  ],
+  "defaultResourceIds": [
+    "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
