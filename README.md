@@ -59,7 +59,9 @@ The goal is to help others:
 
 ## 🛠️ How to Use
 
-1. Import the JSON files directly into Azure Monitor Workbooks.
+1. Import the JSON files directly into Azure Monitor Workbooks, under the Advanced Editor Option:
+    > - ![{BADCE5E9-BF5E-4F7F-857E-76A5A8F71FA9}](https://github.com/user-attachments/assets/929b9523-bda2-41a1-8b4d-8412d36f0150)
+
 2. Connect to your Log Analytics Workspace where uberAgent is sending data.
 3. Enter your Azure Subscription and Resource Group Name & LogAnalytics Workspace Name in the configuration section of the files:
      **  "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"**
