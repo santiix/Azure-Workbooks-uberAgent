@@ -4,7 +4,7 @@
     {
       "type": 1,
       "content": {
-        "json": "User Search: Use Domain\\\\User",
+        "json": "User Search: use \\\\\\ for Domain\\\\\\User",
         "style": "warning"
       },
       "name": "text - 9"
