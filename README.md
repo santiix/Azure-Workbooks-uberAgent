@@ -69,8 +69,8 @@ The goal is to help others:
 > **Requirements:**
 > - Azure Subscription with Monitor and Log Analytics enabled.
 > - uberAgent configured to send logs to Azure Monitor (Log Analytics Workspace).
-[uberAgent Installation Guide]
-(https://docs.citrix.com/en-us/uberagent/7-3-1/installation/backend/configuring-microsoft-azure-oms-log-analytics.html)---
+> - uberAgent Installation Guide
+https://docs.citrix.com/en-us/uberagent/7-3-1/installation/backend/configuring-microsoft-azure-oms-log-analytics.html
 
 ## 🤝 Contributions
 
