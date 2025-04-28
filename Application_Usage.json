@@ -124,7 +124,7 @@
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
         "crossComponentResources": [
-          "/subscriptions/<Azure-Subscrition-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
         ],
         "visualization": "table",
         "gridSettings": {
@@ -164,7 +164,7 @@
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
         "crossComponentResources": [
-          "/subscriptions/<Azure-Subscrition-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
         ],
         "visualization": "barchart",
         "chartSettings": {
@@ -189,7 +189,7 @@
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
         "crossComponentResources": [
-          "/subscriptions/<Azure-Subscrition-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
         ],
         "visualization": "barchart",
         "chartSettings": {
@@ -219,7 +219,7 @@
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
         "crossComponentResources": [
-          "/subscriptions/<Azure-Subscrition-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
         ],
         "visualization": "barchart",
         "chartSettings": {
@@ -246,7 +246,7 @@
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
         "crossComponentResources": [
-          "/subscriptions/<Azure-Subscrition-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
         ],
         "visualization": "barchart",
         "chartSettings": {
@@ -275,7 +275,7 @@
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
         "crossComponentResources": [
-          "/subscriptions/<Azure-Subscrition-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
         ],
         "visualization": "barchart",
         "chartSettings": {
@@ -300,7 +300,7 @@
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
         "crossComponentResources": [
-          "/subscriptions/<Azure-Subscrition-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
         ],
         "visualization": "table",
         "gridSettings": {
@@ -354,7 +354,7 @@
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
         "crossComponentResources": [
-          "/subscriptions/<Azure-Subscrition-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/uberAgent"
         ]
       },
       "name": "query - 8"
