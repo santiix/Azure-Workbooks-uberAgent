@@ -69,8 +69,8 @@ The goal is to help others:
 > **Requirements:**
 > - Azure Subscription with Monitor and Log Analytics enabled.
 > - uberAgent configured to send logs to Azure Monitor (Log Analytics Workspace).
-   > - https://docs.citrix.com/en-us/uberagent/7-3-1/installation/backend/configuring-microsoft-azure-oms-log-analytics
----
+[uberAgent Installation Guide]
+(https://docs.citrix.com/en-us/uberagent/7-3-1/installation/backend/configuring-microsoft-azure-oms-log-analytics.html)---
 
 ## 🤝 Contributions
 
@@ -91,4 +91,6 @@ Let's make it easier for everyone to unlock their uberAgent data using Azure Mon
 
 ---
 
-**Built for the community, by someone who just started asking questions.** 🎯
+**Built out of necessity to simplify visibility for environments where Splunk licensing is cost-prohibitive.** 🎯
+
+Licensed under GPL-3.0
