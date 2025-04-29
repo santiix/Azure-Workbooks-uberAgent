@@ -12,7 +12,7 @@
             "name": "MachineName",
             "type": 2,
             "isGlobal": true,
-            "query": "uberAgent_Session_SessionDetail_CL \r\n| summarize arg_max(TimeGenerated, Computer) by Computer\r\n| project Computer\r\n",
+            "query": "uberAgent_Session_SessionDetail_CL \n| summarize arg_max(TimeGenerated, Computer) by Computer\n| project Computer\n| sort by Computer asc",
             "typeSettings": {
               "additionalResourceOptions": []
             },
