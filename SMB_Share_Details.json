@@ -1,0 +1,242 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "User Search: use \\\\\\ for Domain\\\\\\User",
+        "style": "warning"
+      },
+      "name": "text - 6"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/326ffc02-5ff1-4a73-b1b2-66a006218202/resourceGroups/ATSLab_Infra/providers/Microsoft.OperationalInsights/workspaces/uberagent"
+        ],
+        "parameters": [
+          {
+            "id": "TimeRange",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isGlobal": true,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000
+                },
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "value": {
+              "durationMs": 259200000
+            }
+          },
+          {
+            "id": "Machine",
+            "version": "KqlParameterItem/1.0",
+            "name": "Machine",
+            "type": 1,
+            "value": "*"
+          },
+          {
+            "id": "User",
+            "version": "KqlParameterItem/1.0",
+            "name": "User",
+            "type": 1,
+            "value": "*"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "filters"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\n\r\nuberAgent_System_SmbClient_CL\r\n| where isempty(MachineFilter) or tolower(Computer) has tolower(MachineFilter)\r\n| summarize \r\n    TotalMBRead = sum(IOMBRead_d),\r\n    TotalMBWrite = sum(IOMBWrite_d)\r\n    by Computer, SharePath_s\r\n| extend \r\n    TotalMB = round(TotalMBRead + TotalMBWrite, 1)\r\n| sort by TotalMB desc\r\n| top 20 by TotalMB\r\n| project [\"Computer (Client)\"] = Computer, [\"Share Path (SMB)\"] = SharePath_s, [\"Total Data (MB)\"] = TotalMB\r\n\r\n",
+        "size": 1,
+        "title": "Top SMB Shares by I/O Volume",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 0"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\n\r\nuberAgent_System_SmbClient_CL\r\n| where isempty(MachineFilter) or tolower(Computer) has tolower(MachineFilter)\r\n| summarize \r\n    AvgLatencyReadMs = avg(IOLatencyMsRead_d)\r\n    by Computer, SharePath_s\r\n| extend \r\n    AvgLatencyReadMs = round(AvgLatencyReadMs, 1)\r\n| sort by AvgLatencyReadMs desc\r\n| top 20 by AvgLatencyReadMs\r\n| project [\"Computer (Client)\"] = Computer, [\"Share Path (SMB)\"] = SharePath_s, [\"Avg Read Latency (ms)\"] = AvgLatencyReadMs\r\n\r\n",
+        "size": 1,
+        "title": "Top SMB Shares by Latency",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 3"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\n\r\nuberAgent_System_SmbClient_CL\r\n| where isempty(MachineFilter) or tolower(Computer) has tolower(MachineFilter)\r\n| summarize \r\n    AvgLatencyReadMs = avg(IOLatencyMsRead_d)\r\n    by bin(TimeGenerated, 5m)\r\n| project TimeGenerated, AvgLatencyReadMs = round(AvgLatencyReadMs, 1)\r\n| order by TimeGenerated asc\r\n",
+        "size": 0,
+        "title": "Average SMB Latency Over Time",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ],
+        "visualization": "timechart"
+      },
+      "customWidth": "50",
+      "name": "query - 6",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\n\r\nuberAgent_System_SmbClient_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| summarize \r\n    SumMBRead = sum(IOMBRead_d),\r\n    SumMBWrite = sum(IOMBWrite_d)\r\n    by bin(TimeGenerated, 5m)\r\n| project \r\n    TimeGenerated, \r\n    ReadMB = round(SumMBRead, 1),\r\n    WriteMB = round(SumMBWrite, 1)\r\n| order by TimeGenerated asc\r\n",
+        "size": 0,
+        "title": "SMB Throughput Over Time",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ],
+        "visualization": "timechart"
+      },
+      "customWidth": "50",
+      "name": "query - 4",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\n\r\nuberAgent_System_SmbClient_CL\r\n| where isempty(MachineFilter) or tolower(Computer) has tolower(MachineFilter)\r\n| summarize \r\n    TotalReconnects = sum(IOPSMetadata_d)  // Or use NetTargetReconnectCount_d if available\r\n    by Computer, SharePath_s\r\n| sort by TotalReconnects desc\r\n| top 20 by TotalReconnects\r\n| project [\"Computer (Client)\"] = Computer, [\"Share Path (SMB)\"] = SharePath_s, [\"Total Reconnects\"] = TotalReconnects\r\n",
+        "size": 0,
+        "title": "Top SMB Shares by Reconnect Count",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 5"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\n\r\nuberAgent_System_SmbClient_CL\r\n| where isempty(MachineFilter) or tolower(Computer) has tolower(MachineFilter)\r\n| summarize \r\n    SumMBRead = sum(IOMBRead_d),\r\n    SumMBWrite = sum(IOMBWrite_d)\r\n    by bin(TimeGenerated, 5m)\r\n| project TimeGenerated, ReadMB = round(SumMBRead, 1), WriteMB = round(SumMBWrite, 1)\r\n| order by TimeGenerated asc\r\n",
+        "size": 0,
+        "title": " SMB Throughput Peaks",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ],
+        "visualization": "timechart"
+      },
+      "customWidth": "50",
+      "name": "query - 7",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\n\r\nuberAgent_System_SmbClient_CL\r\n| where isempty(MachineFilter) or tolower(Computer) has tolower(MachineFilter)\r\n| summarize \r\n    AvgLatencyReadMs = avg(IOLatencyMsRead_d)\r\n    by Computer\r\n| sort by AvgLatencyReadMs desc\r\n| top 20 by AvgLatencyReadMs\r\n| project [\"Computer (Client)\"] = Computer, [\"Avg Read Latency (ms)\"] = round(AvgLatencyReadMs, 1)\r\n",
+        "size": 0,
+        "title": "Machines with Highest SMB Latency",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ],
+        "visualization": "barchart"
+      },
+      "customWidth": "50",
+      "name": "query - 8",
+      "styleSettings": {
+        "showBorder": true
+      }
+    }
+  ],
+  "fallbackResourceIds": [
+    "azure monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
