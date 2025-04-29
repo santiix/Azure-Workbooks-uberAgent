@@ -2,28 +2,40 @@
   "version": "Notebook/1.0",
   "items": [
     {
-      "type": 1,
-      "content": {
-        "json": "Query Will Not Return Results Until You Enter a Server Hostname",
-        "style": "warning"
-      },
-      "name": "text - 11"
-    },
-    {
       "type": 9,
       "content": {
         "version": "KqlParameterItem/1.0",
         "parameters": [
           {
-            "id": "TimeRange",
+            "id": "b23f853e-25ec-44fb-95ab-202972928fa8",
+            "version": "KqlParameterItem/1.0",
+            "name": "MachineName",
+            "type": 2,
+            "isGlobal": true,
+            "query": "uberAgent_Session_SessionDetail_CL \r\n| summarize arg_max(TimeGenerated, Computer) by Computer\r\n| project Computer\r\n",
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "value": "W11-LAB-02"
+          },
+          {
+            "id": "94d35942-cb36-4cb0-80cf-1b52e0bb5275",
             "version": "KqlParameterItem/1.0",
             "name": "TimeRange",
             "type": 4,
-            "value": {
-              "durationMs": 604800000
-            },
             "typeSettings": {
               "selectableValues": [
+                {
+                  "durationMs": 300000
+                },
+                {
+                  "durationMs": 900000
+                },
                 {
                   "durationMs": 1800000
                 },
@@ -31,31 +43,53 @@
                   "durationMs": 3600000
                 },
                 {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
                   "durationMs": 86400000
                 },
                 {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
                   "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
                 }
-              ],
-              "allowCustom": true
+              ]
             },
-            "label": "Time Range"
-          },
-          {
-            "id": "Machine",
-            "version": "KqlParameterItem/1.0",
-            "name": "MachineName",
-            "label": "Enter Server Name",
-            "type": 1,
-            "isRequired": true,
-            "value": "*"
+            "value": {
+              "durationMs": 2592000000
+            }
           }
         ],
         "style": "pills",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces"
       },
-      "name": "filters"
+      "name": "parameters - 12",
+      "styleSettings": {
+        "margin": "0px 0px 0px"
+      }
     },
     {
       "type": 3,
@@ -66,9 +100,6 @@
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ],
         "gridSettings": {
           "formatters": [
             {
@@ -93,16 +124,45 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
+        "query": "let MachineName = \"{MachineName}\";\r\nlet userDetails = \r\n    uberAgent_Session_SessionDetail_CL\r\n    | where Computer == MachineName\r\n    | summarize SessionCount = dcount(SessionGUID_g),\r\n                ForgegroundAppCount = dcount(SessionFgAppId_s),\r\n                UserCount = dcount(SessionUser_s)\r\n      by Computer;\r\nlet logonDetails = uberAgent_Logon_LogonDetail_CL\r\n    | where Computer == MachineName\r\n    | summarize LogonCount = dcount(SessionGUID_g) by Computer;\r\nlet applicationErrors = uberAgent_Application_Errors_CL\r\n    | where Computer == MachineName\r\n    | summarize ErrorCount = count() by Computer;\r\nuserDetails\r\n| join kind=inner (logonDetails) on Computer\r\n| join kind=inner (applicationErrors) on Computer\r\n| project Computer, SessionCount, UserCount, LogonCount, ForgegroundAppCount, ErrorCount",
+        "size": 3,
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "query - 1",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
         "query": "let MachineName = \"{MachineName}\";\r\nlet systemPerformance = \r\n    uberAgent_System_SystemPerformanceSummary2_CL\r\n    | where Computer == MachineName\r\n    | summarize \r\n        AvgCPUUsagePercent = avg(CPUUsagePercent_d),\r\n        AvgIOPercentDiskTime = avg(IOPercentDiskTime_d),\r\n        AvgRAMUsagePercent = avg(RAMUsagePercent_d),\r\n        AvgNetUtilizationPercent = avg(NetUtilizationPercent_d),\r\n        AvgPagefileUsagePercent = avg(PagefileUsagePercent_d)\r\n        by Computer\r\n    | extend \r\n        AvgCPUUsagePercentRounded = round(AvgCPUUsagePercent, 1),\r\n        AvgIOPercentDiskTimeRounded = round(AvgIOPercentDiskTime, 2),\r\n        AvgRAMUsagePercentRounded = round(AvgRAMUsagePercent, 1),\r\n        AvgNetUtilizationPercentRounded = round(AvgNetUtilizationPercent, 1),\r\n        AvgPagefileUsagePercentRounded = round(AvgPagefileUsagePercent, 1)\r\n    | project Computer, AvgCPUUsagePercentRounded, AvgIOPercentDiskTimeRounded, AvgRAMUsagePercentRounded, AvgNetUtilizationPercentRounded, AvgPagefileUsagePercentRounded;\r\nlet uiDelay = \r\n    uberAgent_Application_UIDelay_CL\r\n    | where Computer == MachineName\r\n    | summarize SumUIDelayMs = sum(UIDelayMs_d) by Computer\r\n    | extend SumUIDelayS = round(SumUIDelayMs / 1000, 1)\r\n    | project Computer, SumUIDelayS;\r\nlet logonDetails = uberAgent_Logon_LogonDetail_CL\r\n| where Computer == MachineName\r\n| summarize \r\n    LogonCount = dcount(SessionGUID_g),\r\n    AvgTotalLogonTimeMs = avg(TotalLogonTimeMs_d)\r\n    by Computer\r\n| extend AvgTotalLogonTimeSRounded = iff(isnull(AvgTotalLogonTimeMs), \"n/a\", tostring(round(AvgTotalLogonTimeMs / 1000.0, 2)))\r\n| project Computer, AvgTotalLogonTimeSRounded;\r\nsystemPerformance\r\n| join kind=inner (uiDelay) on Computer\r\n| join kind=inner (logonDetails) on Computer\r\n| project Computer, AvgCPUUsagePercentRounded, AvgRAMUsagePercentRounded, AvgIOPercentDiskTimeRounded, AvgNetUtilizationPercentRounded, SumUIDelayS, AvgTotalLogonTimeSRounded, AvgPagefileUsagePercentRounded;",
         "size": 3,
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 2",
+      "styleSettings": {
+        "margin": "0px 0px 0px",
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineName = \"{MachineName}\";\nlet sessionData = \n    uberAgent_Session_SessionDetail_CL\n    | where Computer == MachineName\n    | summarize \n        User = any(SessionUser_s),                // Assume consistent value per SessionGUID_g\n        ID = any(SessionID_d),                    // Assume consistent value per SessionGUID_g\n        Protocol = max(SessionProtocol_s),\n        LastState = max(SessionConnectionState_s),\n        RemotingClients = make_set(SessionClientName_s),\n        AvgSessionProcessCount = avg(SessionProcessCount_d),\n        AvgSessionCPUUsagePercent = avg(SessionCPUUsagePercent_d),\n        AvgSessionIOPS = avg(SessionIOPS_d),\n        AvgSessionWorkingSetMB = avg(SessionWorkingSetMB_d),\n        AvgSessionNetKBPS = avg(SessionNetKBPS_d),\n        AvgSessionRpLatencyMs = avg(SessionRpLatencyMs2_d),\n        LastSeen = max(TimeGenerated),\n        SessionLogonTime = max(SessionLogonTime_s),\n        SumSessionIODurationMs = sum(SessionIOLatencyMs_d),\n        SumSessionIOCount = sum(SessionIOCount_d)\n    by SessionGUID_g;\n\nlet logonData = \n    uberAgent_Logon_LogonDetail_CL\n    | where Computer == MachineName\n    | summarize \n        TotalLogonTimeMs = sum(TotalLogonTimeMs_d)\n    by SessionGUID_g;\n\nsessionData\n| join kind=leftouter (logonData) on SessionGUID_g\n| extend \n    RemotingClients = strcat_array(RemotingClients, \", \"),\n    AvgSessionProcessCount = round(AvgSessionProcessCount, 0),\n    AvgSessionCPUUsagePercent = round(AvgSessionCPUUsagePercent, 1),\n    AvgSessionIOPS = round(AvgSessionIOPS, 1),\n    AvgSessionWorkingSetMB = round(AvgSessionWorkingSetMB, 0),\n    AvgSessionNetKBPS = round(AvgSessionNetKBPS, 1),\n    AvgSessionRpLatencyMs = round(AvgSessionRpLatencyMs, 1),\n    AvgIOLatencyMs = iff(SumSessionIOCount == 0, 0.0, round(toreal(SumSessionIODurationMs) / toreal(SumSessionIOCount), 1)),\n    LastSeen = format_datetime(todatetime(LastSeen), \"yyyy-MM-dd HH:mm:ss\"),\n    SessionLogonTime = format_datetime(todatetime(SessionLogonTime), \"yyyy-MM-dd HH:mm:ss\"),\n    LogonDurationSeconds = round(TotalLogonTimeMs / 1000.0, 2)\n| project \n    User,\n    ID,\n    SessionLogonTime,\n    LogonDurationSeconds,\n    LastSeen,\n    LastState,\n    Protocol,\n    AvgSessionProcessCount,\n    AvgSessionCPUUsagePercent,\n    AvgSessionIOPS,\n    AvgIOLatencyMs,\n    AvgSessionWorkingSetMB,\n    AvgSessionNetKBPS,\n    AvgSessionRpLatencyMs,\n    RemotingClients\n| order by SessionLogonTime desc\n",
+        "size": 3,
+        "title": "Sessions",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "query - 5",
       "styleSettings": {
         "margin": "0px 0px 0px",
         "showBorder": true
@@ -118,9 +178,6 @@
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ],
         "tileSettings": {
           "showBorder": false
         },
@@ -183,10 +240,6 @@
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ],
-        "visualization": "barchart",
         "chartSettings": {
           "showMetrics": false,
           "showLegend": true,
@@ -219,9 +272,6 @@
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ],
         "visualization": "linechart",
         "tileSettings": {
           "showBorder": false
@@ -285,9 +335,6 @@
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ],
         "chartSettings": {
           "showMetrics": false,
           "showLegend": true,
@@ -319,10 +366,7 @@
         "title": "Applications",
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "applications",
       "styleSettings": {
@@ -339,14 +383,116 @@
         "title": "Network Connections",
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 9",
       "styleSettings": {
         "margin": "0px 0px 0px",
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Stop Errors",
+        "items": [
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "422a2dbe-5cbe-479c-88a9-c2af232d9466",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "TimeRange_StopError",
+                  "label": "Time Range:",
+                  "type": 4,
+                  "typeSettings": {
+                    "selectableValues": [
+                      {
+                        "durationMs": 300000
+                      },
+                      {
+                        "durationMs": 900000
+                      },
+                      {
+                        "durationMs": 1800000
+                      },
+                      {
+                        "durationMs": 3600000
+                      },
+                      {
+                        "durationMs": 14400000
+                      },
+                      {
+                        "durationMs": 43200000
+                      },
+                      {
+                        "durationMs": 86400000
+                      },
+                      {
+                        "durationMs": 172800000
+                      },
+                      {
+                        "durationMs": 259200000
+                      },
+                      {
+                        "durationMs": 604800000
+                      },
+                      {
+                        "durationMs": 1209600000
+                      },
+                      {
+                        "durationMs": 2419200000
+                      },
+                      {
+                        "durationMs": 2592000000
+                      },
+                      {
+                        "durationMs": 5184000000
+                      },
+                      {
+                        "durationMs": 7776000000
+                      }
+                    ]
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "value": {
+                    "durationMs": 604800000
+                  }
+                }
+              ],
+              "style": "pills",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "parameters - 0"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let MachineName = \"{MachineName}\";\nuberAgent_System_Bugcheck_CL\n| summarize \n    BugcheckTime = max(TimeGenerated),\n    StopErrorCode = max(BugcheckCode_d),\n    Param1 = max(BugcheckParameter1_s),\n    Param2 = max(BugcheckParameter2_s),\n    Param3 = max(BugcheckParameter3_s),\n    Param4 = max(BugcheckParameter4_s),\n    PowerButtonTimestamp = max(PowerButtonTimestampEpoch_d),\n    SleepInProgress = max(SleepInProgress_d),\n    SystemSleepTransitionsToOn = max(SystemSleepTransitionsToOn_d),\n    ConnStandbyInProgress = max(ConnectedStandbyInProgress_d)\n    by TimeGenerated, Computer\n| where Computer in (MachineName)\n| extend \n    Time = format_datetime(BugcheckTime, \"yyyy-MM-dd HH:mm:ss\"),\n    PowerButtonTimestamp = format_datetime(unixtime_milliseconds_todatetime(PowerButtonTimestamp), \"yyyy-MM-dd HH:mm:ss\"),\n    StopErrorCodeHex = strcat(\"0x\", tolower(bin(StopErrorCode, 16)))\n| project \n    Time,\n    Host = Computer,\n    StopErrorCodeHex,\n    Param1,\n    Param2,\n    Param3,\n    Param4,\n    PowerButtonTimestamp,\n    SleepInProgress,\n    SystemSleepTransitionsToOn,\n    ConnStandbyInProgress\n| sort by Time desc",
+              "size": 3,
+              "title": "Stop Errors",
+              "timeContextFromParameter": "TimeRange_StopError",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "query - 10",
+            "styleSettings": {
+              "margin": "0px 0px 0px",
+              "showBorder": true
+            }
+          }
+        ]
+      },
+      "name": "grp-StopErrors",
+      "styleSettings": {
         "showBorder": true
       }
     },
@@ -422,7 +568,7 @@
                     "durationMs": 86400000
                   },
                   "value": {
-                    "durationMs": 604800000
+                    "durationMs": 86400000
                   }
                 }
               ],
@@ -441,10 +587,7 @@
               "title": "Disk Space",
               "timeContextFromParameter": "timeRange_diskSpace",
               "queryType": 0,
-              "resourceType": "microsoft.operationalinsights/workspaces",
-              "crossComponentResources": [
-                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-              ]
+              "resourceType": "microsoft.operationalinsights/workspaces"
             },
             "name": "query - 11",
             "styleSettings": {
@@ -459,8 +602,8 @@
       }
     }
   ],
-  "fallbackResourceIds": [
-    "azure monitor"
+  "defaultResourceIds": [
+    "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
   ],
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
 }
