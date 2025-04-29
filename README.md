@@ -64,7 +64,7 @@ The goal is to help others:
 
 2. Connect to your Log Analytics Workspace where uberAgent is sending data.
 3. Enter your Azure Subscription and Resource Group Name & LogAnalytics Workspace Name in the configuration section of the files:
-     **  "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"**
+> - "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
 
 4. Adjust any parameters (like `TimeRange`, `Machine`, or `User`) in the workbook views.
 5. Start analyzing and customizing the dashboards as needed!
