@@ -90,8 +90,8 @@ Suggestions, ideas, and improvements are always appreciated!
 
 ## 🤝 Special Thanks:
 
-> -🤝  Amir Trujillo for finding my first bugs and gettin them resolved on the spot!;
-> -🤝  Vivek KR for sharing some of the original workbooks to get me started.;
+- 🤝 **Amir Trujillo** – for finding my first bugs and getting them resolved on the spot!
+- 🤝 **Vivek KR** – for sharing some of the original workbooks to get me started.
 ---
 
 ## 📬 Contact
