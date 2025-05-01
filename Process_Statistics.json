@@ -69,11 +69,15 @@
         "version": "KqlItem/1.0",
         "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\nlet startup = \n    uberAgent_Process_ProcessStartup_CL\n    | where isempty(MachineFilter) or Computer has MachineFilter\n    | summarize \n        SumStartupIOCount = sum(StartupIOPS_d),\n        CountProcessStartup = count()\n      by AppId_s, ProcName_s;\nstartup\n| join kind=leftouter (\n    uberAgent_Application_AppNameIdMapping_CL\n    | project AppId_s, AppName = AppName_s\n) on AppId_s\n| extend AvgStartupIOCount = round(SumStartupIOCount / CountProcessStartup, 2)\n| summarize TotalIO = sum(SumStartupIOCount), Processes = make_list(ProcName_s) by AppName\n| top 10 by TotalIO desc",
         "size": 0,
-        "title": "Top Applications with Startup IO Grouped by Processes",
+        "title": "Top Applications by Cumulative Startup I/O, Grouped by Process",
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
-        "visualization": "categoricalbar"
+        "visualization": "barchart",
+        "chartSettings": {
+          "group": "Processes",
+          "createOtherGroup": null
+        }
       },
       "name": "StartupByAppProcess"
     },
@@ -95,7 +99,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\nlet ProcessData = \n    uberAgent_Process_ProcessStartup_CL\n    | where isempty(MachineFilter) or Computer has MachineFilter\n    | project TimeGenerated, AppId_s, ProcName_s, StartupTimeMs_d, StartupIOPS_d, ProcUser_s, Computer\n    | extend StartupTimeS = round(StartupTimeMs_d / 1000.0, 2);\nlet AppMap = \n    uberAgent_Application_AppNameIdMapping_CL\n    | summarize AppName = any(AppName_s) by AppId_s;\nProcessData\n| join kind=leftouter (AppMap) on AppId_s\n| summarize\n    TotalStartups = count(),\n    AvgStartupTimeS = round(avg(StartupTimeS), 2),\n    AvgIOPS = round(avg(StartupIOPS_d), 2),\n    Users = dcount(ProcUser_s),\n    Hosts = dcount(Computer)\n    by AppName, ProcName_s\n| sort by AvgStartupTimeS desc\n",
+        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\n\nlet ProcessData = \n    uberAgent_Process_ProcessStartup_CL\n    | where isempty(MachineFilter) or Computer has MachineFilter\n    | project TimeGenerated, AppId_s, ProcName_s, StartupTimeMs_d, StartupIOPS_d, ProcUser_s, Computer\n    | extend StartupTimeS = round(StartupTimeMs_d / 1000.0, 2);\n\nlet AppMap = \n    uberAgent_Application_AppNameIdMapping_CL\n    | summarize AppName = any(AppName_s) by AppId_s;\n\nProcessData\n| join kind=leftouter (AppMap) on AppId_s\n| summarize\n    TotalStartups = count(),\n    AvgStartupTimeS = round(avg(StartupTimeS), 2),\n    AvgIOPS = round(avg(StartupIOPS_d), 2),\n    UserCount = dcount(ProcUser_s)\n    by AppName, ProcName_s, Computer\n| project \n    Computer,\n    AppName,\n    Process = ProcName_s,\n    AvgStartupTimeS,\n    AvgIOPS,\n    TotalStartups,\n    UserCount\n| sort by AvgStartupTimeS desc\n",
         "size": 0,
         "title": "Detailed Process Startup Table",
         "timeContextFromParameter": "TimeRange",
