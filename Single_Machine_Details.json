@@ -21,7 +21,7 @@
             },
             "queryType": 0,
             "resourceType": "microsoft.operationalinsights/workspaces",
-            "value": "null"
+            "value": null
           },
           {
             "id": "94d35942-cb36-4cb0-80cf-1b52e0bb5275",
