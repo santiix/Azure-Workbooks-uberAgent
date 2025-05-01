@@ -2,53 +2,24 @@
   "version": "Notebook/1.0",
   "items": [
     {
-      "type": 1,
-      "content": {
-        "json": "For User Search, use Domain\\User",
-        "style": "info"
-      },
-      "name": "text - 10"
-    },
-    {
       "type": 9,
       "content": {
         "version": "KqlParameterItem/1.0",
-        "parameters": [
-          {
-            "id": "009c874d-2354-4245-9f61-fed224a8d21d",
-            "version": "KqlParameterItem/1.0",
-            "name": "User",
-            "type": 1,
-            "value": "*"
-          }
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
         ],
-        "style": "pills",
-        "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces"
-      },
-      "customWidth": "20",
-      "name": "parameters - 0"
-    },
-    {
-      "type": 9,
-      "content": {
-        "version": "KqlParameterItem/1.0",
         "parameters": [
           {
-            "id": "3d49f8df-72a2-4379-88f3-1f6b36667306",
+            "id": "TimeRange",
             "version": "KqlParameterItem/1.0",
             "name": "TimeRange",
-            "label": "Time Range",
             "type": 4,
-            "isRequired": true,
+            "value": {
+              "durationMs": 604800000
+            },
             "typeSettings": {
               "selectableValues": [
-                {
-                  "durationMs": 300000
-                },
-                {
-                  "durationMs": 900000
-                },
                 {
                   "durationMs": 1800000
                 },
@@ -56,55 +27,32 @@
                   "durationMs": 3600000
                 },
                 {
-                  "durationMs": 14400000
-                },
-                {
-                  "durationMs": 43200000
-                },
-                {
                   "durationMs": 86400000
                 },
                 {
-                  "durationMs": 172800000
-                },
-                {
-                  "durationMs": 259200000
-                },
-                {
                   "durationMs": 604800000
-                },
-                {
-                  "durationMs": 1209600000
-                },
-                {
-                  "durationMs": 2419200000
-                },
-                {
-                  "durationMs": 2592000000
-                },
-                {
-                  "durationMs": 5184000000
-                },
-                {
-                  "durationMs": 7776000000
                 }
               ],
               "allowCustom": true
             },
-            "timeContext": {
-              "durationMs": 86400000
-            },
-            "value": {
-              "durationMs": 604800000
-            }
+            "label": "Time Range"
+          },
+          {
+            "id": "User",
+            "version": "KqlParameterItem/1.0",
+            "name": "User",
+            "label": "Select User",
+            "type": 2,
+            "query": "uberAgent_Session_SessionDetail_CL | summarize arg_max(TimeGenerated, SessionUser_s) by SessionUser_s | project Value = SessionUser_s",
+            "value": "CTX-LAB\\clo",
+            "resourceType": "microsoft.operationalinsights/workspaces"
           }
         ],
         "style": "pills",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces"
       },
-      "customWidth": "20",
-      "name": "parameters - 1"
+      "name": "filters"
     },
     {
       "type": 12,
@@ -134,9 +82,6 @@
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
               "resourceType": "microsoft.operationalinsights/workspaces",
-              "crossComponentResources": [
-                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-              ],
               "visualization": "table",
               "gridSettings": {
                 "formatters": [
@@ -197,9 +142,6 @@
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
               "resourceType": "microsoft.operationalinsights/workspaces",
-              "crossComponentResources": [
-                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-              ],
               "visualization": "table",
               "gridSettings": {
                 "filter": true
@@ -230,9 +172,6 @@
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
               "resourceType": "microsoft.operationalinsights/workspaces",
-              "crossComponentResources": [
-                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-              ],
               "gridSettings": {
                 "labelSettings": [
                   {
@@ -271,9 +210,6 @@
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
               "resourceType": "microsoft.operationalinsights/workspaces",
-              "crossComponentResources": [
-                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-              ],
               "gridSettings": {
                 "labelSettings": [
                   {
@@ -313,9 +249,6 @@
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
               "resourceType": "microsoft.operationalinsights/workspaces",
-              "crossComponentResources": [
-                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-              ],
               "visualization": "barchart",
               "chartSettings": {
                 "showMetrics": false,
@@ -335,9 +268,6 @@
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
               "resourceType": "microsoft.operationalinsights/workspaces",
-              "crossComponentResources": [
-                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-              ],
               "visualization": "linechart",
               "chartSettings": {
                 "showMetrics": false,
@@ -372,9 +302,6 @@
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
               "resourceType": "microsoft.operationalinsights/workspaces",
-              "crossComponentResources": [
-                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-              ],
               "visualization": "barchart",
               "chartSettings": {
                 "showMetrics": false,
@@ -394,9 +321,6 @@
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
               "resourceType": "microsoft.operationalinsights/workspaces",
-              "crossComponentResources": [
-                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-              ],
               "visualization": "linechart",
               "chartSettings": {
                 "showMetrics": false,
@@ -429,9 +353,6 @@
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
               "resourceType": "microsoft.operationalinsights/workspaces",
-              "crossComponentResources": [
-                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-              ],
               "visualization": "table",
               "gridSettings": {
                 "formatters": [
@@ -455,8 +376,13 @@
       }
     }
   ],
+  "defaultResourceIds": [
+    "azure monitor",
+    "/subscriptions/326ffc02-5ff1-4a73-b1b2-66a006218202/resourceGroups/ATSLab_Infra/providers/Microsoft.OperationalInsights/workspaces/uberagent"
+  ],
   "fallbackResourceIds": [
-    "azure monitor"
+    "azure monitor",
+    "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
   ],
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
-}
+}           
