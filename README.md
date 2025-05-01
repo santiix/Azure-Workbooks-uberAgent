@@ -37,6 +37,7 @@ The goal is to help others:
 - **Machine Performance**
 - **Machine Network Performance**
 - **SMB Share Details**
+- **Session Health**
 - 
 ### **Process and Input Delay Analysis**
 - **Process Startup**
