@@ -1,0 +1,276 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "Azure Monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ],
+        "parameters": [
+          {
+            "id": "MachineFilter",
+            "version": "KqlParameterItem/1.0",
+            "name": "Machine",
+            "type": 1,
+            "value": "*",
+            "isGlobal": true,
+            "label": "Machine Name"
+          },
+          {
+            "id": "TimeRange",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isGlobal": true,
+            "value": {
+              "durationMs": 259200000
+            }
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "filters"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\nlet EventDescriptions = datatable(EventID_d:int, EventDescription:string)\n[\n    4624, \"Successful logon\",\n    4625, \"Failed logon attempt\",\n    4688, \"New process created\",\n    6005, \"Event log service started (system boot)\",\n    6006, \"Event log service stopped (system shutdown)\",\n    1000, \"Application crash\",\n    1001, \"App crash report (WER)\",\n    7045, \"New service installed\",\n    1102, \"Security audit log cleared\",\n    4697, \"Service installed via SCM\",\n    4798, \"A user's local group membership was enumerated\",\n    528,   \"Logon successful (legacy pre-Vista)\",\n    4627, \"Group membership information updated\",\n    4662, \"An operation was performed on an object\",\n    4663, \"Attempt to access an object\",\n    4799, \"Security-enabled local group membership enumerated\",\n    4673, \"Privileged service was called\",\n    4672, \"Special privileges assigned to new logon\"\n];\nuberAgentESA_System_WinEvtLogForwarding_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| extend EventID_int = toint(EventID_d)\n| summarize EventCount = count() by EventID_int\n| top 10 by EventCount\n| join kind=leftouter (EventDescriptions) on $left.EventID_int == $right.EventID_d\n| project ['Event ID'] = EventID_int, ['Occurrences'] = EventCount, ['Description'] = coalesce(EventDescription, \"Unknown Event ID\")\n\n",
+        "size": 0,
+        "title": "Top Event IDs by Volume",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "customWidth": "50",
+      "name": "Top Event IDs",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\nuberAgentESA_System_WinEvtLogForwarding_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| summarize EventCount = count() by bin(TimeGenerated, 1h)\n| project ['Time'] = TimeGenerated, ['Events'] = EventCount\n| order by ['Time'] asc\n| render timechart",
+        "size": 0,
+        "title": "Event Volume Over Time",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "customWidth": "25",
+      "name": "Events Over Time",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\nuberAgentESA_System_WinEvtLogForwarding_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| summarize EventCount = count() by ProviderName_s\n| top 10 by EventCount\n| project ['Provider'] = ProviderName_s, ['Event Count'] = EventCount\n| render piechart",
+        "size": 0,
+        "title": "Top Event Sources (Providers)",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "barchart"
+      },
+      "customWidth": "25",
+      "name": "Event Sources",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\nuberAgentESA_System_WinEvtLogForwarding_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| summarize EventCount = count() by Channel_s\n| top 10 by EventCount\n| project ['Channel'] = Channel_s, ['Event Count'] = EventCount\n| render barchart",
+        "size": 0,
+        "title": "Event Log Breakdown by Channel",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "customWidth": "25",
+      "name": "Log Breakdown",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgentESA_System_WinEvtLogForwarding_CL\n| summarize EventCount = count() by Computer\n| top 10 by EventCount\n| project ['Computer'] = Computer, ['Event Count'] = EventCount\n| render barchart",
+        "size": 0,
+        "title": "Top Computers by Event Count",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ],
+        "visualization": "barchart"
+      },
+      "customWidth": "25",
+      "name": "Top Computers",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nuberAgentESA_System_WinEvtLogForwarding_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where EventID_d in (4625, 4673, 1102, 4697, 4660, 5145)\r\n| summarize Count = count() by EventID_d, Computer, bin(TimeGenerated, 1h)\r\n",
+        "size": 0,
+        "title": "Suspicious Event Tracker",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "table"
+      },
+      "customWidth": "50",
+      "name": "query - 7",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "event-id-input",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "EventID",
+                  "type": 1,
+                  "defaultValue": "*",
+                  "quote": false,
+                  "value": ""
+                }
+              ],
+              "style": "pills",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "Event ID Input"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\nlet EventIDFilter = iff(\"{EventID}\" == \"*\" or isempty(\"{EventID}\"), -1, toint(\"{EventID}\"));\nlet EventDescriptions = datatable(EventID_d:int, EventDescription:string)\n[\n    4624, \"Successful logon\",\n    4625, \"Failed logon attempt\",\n    4688, \"New process created\",\n    6005, \"Event log service started (system boot)\",\n    6006, \"Event log service stopped (system shutdown)\",\n    1000, \"Application crash\",\n    1001, \"App crash report (WER)\",\n    7045, \"New service installed\",\n    1102, \"Security audit log cleared\",\n    4697, \"Service installed via SCM\",\n    4798, \"Local group membership enumerated\",\n    528,   \"Legacy logon successful\",\n    4627, \"Group membership updated\",\n    4662, \"Operation performed on object\",\n    4663, \"Object access attempt\",\n    4799, \"Enumerated security-enabled local group membership\",\n    4673, \"Privileged service called\",\n    4672, \"Special privileges assigned to new logon\",\n    4660, \"Object deleted\",\n    4702, \"Scheduled task updated\",\n    503,  \"Citrix ConfigSync: sync started\",\n    505,  \"Citrix ConfigSync: sync completed\",\n    9027, \"Desktop Window Manager rendering event\",\n    16384, \"SPP: Licensing status update\",\n    16394, \"SPP: License activation issue\",\n    10000, \"Citrix Agent WatchDog health event\",\n    10100, \"Citrix ADAgent heartbeat or status event\"\n];\nuberAgentESA_System_WinEvtLogForwarding_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| extend EventID_int = toint(EventID_d)\n| where EventIDFilter == -1 or EventID_int == EventIDFilter\n| join kind=leftouter (EventDescriptions) on $left.EventID_int == $right.EventID_d\n| extend ParsedData = parse_json(EventData_s)\n| extend HasData0 = ParsedData.Data0\n| extend ComponentList = parse_json(ParsedData.Data0)\n| mv-expand Component = iif(isnotempty(ComponentList), ComponentList, dynamic({}))\n| extend\n    ComponentType = tostring(Component.ComponentType),\n    Version = tostring(Component.Version)\n| project TimeGenerated, Computer, EventID = EventID_int, Description = coalesce(EventDescription, \"Unknown Event ID\"),\n          Provider = ProviderName_s, Channel = Channel_s, ComponentType, Version\n| sort by TimeGenerated desc",
+              "size": 0,
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "azure monitor",
+                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+              ]
+            },
+            "name": "All Event ID Details"
+          }
+        ]
+      },
+      "name": "group - 12"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgentESA_System_WinEvtLogForwarding_CL\r\n| where Level_d in (1, 2) // 1 = Critical, 2 = Error\r\n| where Computer has \"{Machine}\" or \"{Machine}\" == \"*\"\r\n| summarize Count = count() by Channel_s, EventID_d, ProviderName_s",
+        "size": 1,
+        "title": "Critical & Error Level Events",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "customWidth": "33",
+      "name": "query - 9",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgentESA_System_WinEvtLogForwarding_CL\r\n| where Channel_s == \"Security\"\r\n| extend EventData = parse_json(EventData_s)\r\n| extend User = tostring(EventData.SubjectUserName)\r\n| where isnotempty(User)\r\n| summarize EventCount = count() by User\r\n| top 10 by EventCount desc\r\n",
+        "size": 1,
+        "title": "Audit Event by User",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "customWidth": "33",
+      "name": "query - 10",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgentESA_System_WinEvtLogForwarding_CL\r\n| where Computer has \"{Machine}\" or \"{Machine}\" == \"*\"\r\n| summarize Count = count() by Channel_s\r\n",
+        "size": 1,
+        "title": "System Event Breakdown by Channel",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "customWidth": "33",
+      "name": "query - 11",
+      "styleSettings": {
+        "showBorder": true
+      }
+    }
+  ],
+  "defaultResourceIds": [
+    "azure monitor",
+    "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+  ],
+  "fallbackResourceIds": [
+    "azure monitor",
+    "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
