@@ -46,6 +46,8 @@ The goal is to help others:
 ### **User Statistics**
 - **User Statistics Overview**
 
+### **Event ID's**
+- **Event ID Diagnostic**
 ---
 
 ## 📈 Focus Areas
