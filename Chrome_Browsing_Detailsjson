@@ -1,0 +1,285 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "This dashboard surfaces browser telemetry from uberAgent, focused on Chrome-based web activity. Insights include page load times, HTTP error trends, bandwidth usage, and top applications by I/O and more.",
+        "style": "info"
+      },
+      "name": "Web Overview"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+          "Azure Monitor"
+        ],
+        "parameters": [
+          {
+            "id": "TimeRange",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isGlobal": true,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 604800000
+                }
+              ],
+              "allowCustom": true
+            },
+            "value": {
+              "durationMs": 604800000
+            }
+          },
+          {
+            "id": "Machine",
+            "version": "KqlParameterItem/1.0",
+            "name": "Machine",
+            "type": 1,
+            "value": "*",
+            "label": "Enter Machine"
+          },
+          {
+            "id": "User",
+            "version": "KqlParameterItem/1.0",
+            "name": "User",
+            "type": 1,
+            "value": "*",
+            "label": "Enter User"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "filters"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\nlet UserFilter = iff('{User}' == '*' or isempty('{User}'), '', '{User}');\nuberAgent_Application_BrowserWebRequests2_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| where isempty(UserFilter) or ProcUser_s has UserFilter\n| summarize AvgPageLoadMs = avg(PageLoadTotalDurationMs_d), RequestCount = count() by RequestHost_s\n| top 10 by AvgPageLoadMs desc\n| project ['Host'] = RequestHost_s, ['Avg Load Time (ms)'] = round(AvgPageLoadMs, 1), ['Requests'] = RequestCount",
+        "size": 1,
+        "title": "Top 10 Slowest Websites",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "unstackedbar",
+        "gridSettings": {
+          "sortBy": [
+            {
+              "itemKey": "Avg Load Time (ms)",
+              "sortOrder": 2
+            }
+          ]
+        },
+        "sortBy": [
+          {
+            "itemKey": "Avg Load Time (ms)",
+            "sortOrder": 2
+          }
+        ]
+      },
+      "customWidth": "50",
+      "name": "query-slowest-sites",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_Application_BrowserWebRequests2_CL\n| summarize Total5xx = sum(HttpStatusCount5xx_d), Total4xx = sum(HttpStatusCount4xx_d) by RequestHost_s\n| top 10 by Total5xx desc\n| project ['Host'] = RequestHost_s, ['HTTP 5xx Errors'] = Total5xx, ['HTTP 4xx Errors'] = Total4xx",
+        "size": 1,
+        "title": "Top Sites with HTTP Errors",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "customWidth": "50",
+      "name": "query-http-errors",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\n\nuberAgent_Application_BrowserPerformanceChrome_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| where isempty(UserFilter) or ProcUser_s has UserFilter\n| summarize BandwidthMB = sum(NetKBPS_d) / 1024.0 by Computer, ProcUser_s\n| top 10 by BandwidthMB desc\n| project ['User'] = ProcUser_s, ['Computer'] = Computer, ['Bandwidth Used (MB)'] = round(BandwidthMB, 1)\n",
+        "size": 1,
+        "title": "Top Devices by Browser Bandwidth",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "table"
+      },
+      "customWidth": "50",
+      "name": "query-browser-bandwidth",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\nlet UserFilter = iff('{User}' == '*' or isempty('{User}'), '', '{User}');\n\nuberAgent_Application_BrowserPerformanceChrome_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| where isempty(UserFilter) or ProcUser_s has UserFilter\n| summarize CPU = avg(CPUPercent_d), RAM = avg(WorkingSetMB_d), IO = avg(IOPS_d) by ProcUser_s\n| top 10 by CPU desc\n| project ['User'] = ProcUser_s, ['CPU %'] = round(CPU, 1), ['RAM (MB)'] = round(RAM, 1), ['IOPS'] = round(IO, 1)",
+        "size": 1,
+        "title": "Top Users by Browser Resource Usage",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "customWidth": "50",
+      "name": "browser-users",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_Application_BrowserWebRequests2_CL\n| where PageLoadTotalDurationMs_d > 0\n| summarize AvgLoadTimeMs = round(avg(PageLoadTotalDurationMs_d), 1), Count = count() \n  by RequestHost_s\n| sort by AvgLoadTimeMs desc\n| top 10 by AvgLoadTimeMs\n",
+        "size": 0,
+        "title": "Top Slow-Loading Websites",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "gridSettings": {
+          "sortBy": [
+            {
+              "itemKey": "AvgLoadTimeMs",
+              "sortOrder": 2
+            }
+          ]
+        },
+        "sortBy": [
+          {
+            "itemKey": "AvgLoadTimeMs",
+            "sortOrder": 2
+          }
+        ]
+      },
+      "customWidth": "50",
+      "name": "query-trend-page-loads",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_Application_BrowserWebRequests2_CL\r\n| extend TLD = extract(@\"\\.([a-z]{2,})$\", 1, RequestHost_s)\r\n| where TLD in~ (\"ru\", \"xyz\", \"cn\", \"tk\", \"kp\")\r\n| summarize Hits = count() by ProcUser_s, Computer, TLD\r\n| sort by Hits desc\r\n",
+        "size": 0,
+        "title": "Unusual Access to Domains (\"ru\", \"xyz\", \"cn\", \"tk\", \"kp\")",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "table"
+      },
+      "customWidth": "50",
+      "name": "query - 11",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\nlet UserFilter = iff('{User}' == '*' or isempty('{User}'), '', '{User}');\nuberAgent_Application_BrowserWebRequests2_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| where isempty(UserFilter) or ProcUser_s has UserFilter\n| summarize Count4xx = sum(HttpStatusCount4xx_d), Count5xx = sum(HttpStatusCount5xx_d) by bin(TimeGenerated, 1h)\n| project TimeGenerated, ['HTTP 4xx Errors'] = Count4xx, ['HTTP 5xx Errors'] = Count5xx\n| render timechart",
+        "size": 0,
+        "title": "HTTP Errors Over Time",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "barchart"
+      },
+      "customWidth": "50",
+      "name": "http-errors",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\nlet UserFilter = iff('{User}' == '*' or isempty('{User}'), '', '{User}');\n\nuberAgent_Application_BrowserPerformanceChrome_CL\n| where isempty(UserFilter) or ProcUser_s has UserFilter\n| where isempty(MachineFilter) or Computer has MachineFilter\n| summarize AvgNet = avg(NetKBPS_d) by Computer\n| top 10 by AvgNet desc\n| project ['Machine'] = Computer, ['Avg Browser Net (KBps)'] = round(AvgNet, 1)",
+        "size": 0,
+        "title": "Top Machines by Browser Network Usage",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "unstackedbar"
+      },
+      "customWidth": "50",
+      "name": "net-top-machines",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_Application_BrowserWebRequests2_CL\n| summarize AvgRenderTime = avg(PageLoadRenderDurationMs_d), AvgNetworkTime = avg(PageLoadNetworkDurationMs_d) by bin(TimeGenerated, 1h)\n| project TimeGenerated, ['Render Time (ms)'] = round(AvgRenderTime, 1), ['Network Time (ms)'] = round(AvgNetworkTime, 1)\n| render timechart",
+        "size": 0,
+        "title": "Render vs. Network Load Time",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "unstackedbar",
+        "tileSettings": {
+          "showBorder": false
+        }
+      },
+      "customWidth": "50",
+      "name": "render-vs-network",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\n\r\nuberAgent_Application_BrowserWebRequests2_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| where isnotempty(RequestHost_s)\r\n| summarize Visits = count() by RequestHost_s, ProcUser_s, Computer\r\n| sort by Visits desc",
+        "size": 0,
+        "title": "🔎 Top Domains Accessed by User and Machine",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "customWidth": "50",
+      "name": "query - 11",
+      "styleSettings": {
+        "showBorder": true
+      }
+    }
+  ],
+  "defaultResourceIds": [
+    "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+    "Azure Monitor"
+  ],
+  "fallbackResourceIds": [
+    "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
