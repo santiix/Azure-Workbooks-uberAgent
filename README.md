@@ -48,6 +48,12 @@ The goal is to help others:
 
 ### **Event ID's**
 - **Event ID Diagnostic**
+
+- ### **Web Browsing Domains & Events**
+- **Chrome Browsing Details**
+
+- - ### **ESA Security Events**
+- **DNS Risk Example Charts**
 ---
 
 ## 📈 Focus Areas
