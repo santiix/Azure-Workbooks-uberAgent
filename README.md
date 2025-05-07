@@ -25,6 +25,7 @@ The goal is to help others:
 - **Logon Diagnosis**
 - **Single User Session Details**
 - **Single Machine Details**
+![image](https://github.com/user-attachments/assets/5f83ae6e-f54f-450e-a863-71fcb0a06cf0)
 
 ### **Application Insights**
 - **App UI Unresponsive**
@@ -32,29 +33,36 @@ The goal is to help others:
 - **Application Inventory**
 - **Application Performance**
 - **Application Usage**
+![image](https://github.com/user-attachments/assets/3cd66596-23d6-4307-b34a-ff9a65f1702a)
 
 ### **System Health Monitoring**
 - **Machine Performance**
 - **Machine Network Performance**
 - **SMB Share Details**
 - **Session Health**
-- 
+![image](https://github.com/user-attachments/assets/b9c36797-d8ce-405d-865d-44e32b9bb557)
+  
 ### **Process and Input Delay Analysis**
 - **Process Startup**
 - **Process Statistics**
+![image](https://github.com/user-attachments/assets/47ce0275-c867-457f-b813-9ff29c530885)
 
 ### **User Statistics**
 - **User Statistics Overview**
+![image](https://github.com/user-attachments/assets/a4eb4c85-c735-4acc-ac11-b468cd2235b8)
 
 ### **Event ID's**
 - **Event ID Diagnostic**
+![image](https://github.com/user-attachments/assets/9778cc30-2708-47b4-a0b6-6adda8267656)
 
 - ### **Web Browsing Domains & Events**
 - **Chrome Browsing Details**
+![image](https://github.com/user-attachments/assets/714517bc-ac55-4631-9ea1-a2be69e069e2)
 
-- - ### **ESA Security Events**
+- ### **ESA Security Events**
 - **DNS Risk Example Charts**
----
+![image](https://github.com/user-attachments/assets/48c80dda-d89a-4e5d-bd09-4459bb22b42f)
+  
 
 ## 📈 Focus Areas
 
