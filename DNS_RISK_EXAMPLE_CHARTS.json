@@ -1,0 +1,441 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/326ffc02-5ff1-4a73-b1b2-66a006218202/resourceGroups/ATSLab_Infra/providers/Microsoft.OperationalInsights/workspaces/uberagent"
+        ],
+        "parameters": [
+          {
+            "id": "TimeRange",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isGlobal": true,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000
+                },
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "value": {
+              "durationMs": 86400000
+            }
+          },
+          {
+            "id": "Machine",
+            "version": "KqlParameterItem/1.0",
+            "name": "Machine",
+            "type": 1,
+            "value": "*"
+          },
+          {
+            "id": "User",
+            "version": "KqlParameterItem/1.0",
+            "name": "User",
+            "type": 1,
+            "value": "*"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "filters"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Suspicious DNS Requests by Process",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\nlet MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\n\r\nlet dns = uberAgentESA_Process_DnsQuery_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| summarize DNSCount = count(), EntropyHits = countif(DnsRiskHighEntropy_d == 1)\r\n  by ProcGUID_g, Computer, ProcName_s;\r\n\r\nlet proc = uberAgentESA_Process_ProcessStop_CL\r\n| project ProcGUID_g, ProcUser_s;\r\n\r\ndns\r\n| join kind=leftouter proc on ProcGUID_g\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| project Computer, ProcName_s, ProcUser_s, DNSCount, EntropyHits\r\n",
+              "size": 0,
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+              ],
+              "visualization": "barchart",
+              "chartSettings": {
+                "xAxis": "ProcName_s"
+              }
+            },
+            "name": "query - 1"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\nlet MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\n\r\nlet dns = uberAgentESA_Process_DnsQuery_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| summarize DNSCount = count(), EntropyHits = countif(DnsRiskHighEntropy_d == 1)\r\n  by ProcGUID_g, Computer, ProcName_s;\r\n\r\nlet proc = uberAgentESA_Process_ProcessStop_CL\r\n| project ProcGUID_g, ProcUser_s;\r\n\r\ndns\r\n| join kind=leftouter proc on ProcGUID_g\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| project Computer, ProcName_s, ProcUser_s, DNSCount, EntropyHits\r\n",
+              "size": 0,
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+              ],
+              "sortBy": []
+            },
+            "name": "query - 2"
+          }
+        ]
+      },
+      "customWidth": "50",
+      "name": "group - 15",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Most Queried Suspicious Domains",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\n\r\nlet dns = uberAgentESA_Process_DnsQuery_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| summarize DNSCount = count(), \r\n            UniqueDomains = dcount(DnsRequest_s), \r\n            EntropyHits = countif(DnsRiskHighEntropy_d == 1),\r\n            LastSeen = max(TimeGenerated)\r\n  by ProcGUID_g, Computer, ProcName_s;\r\n\r\nlet proc = uberAgentESA_Process_ProcessStop_CL\r\n| project ProcGUID_g, ProcUser_s;\r\n\r\ndns\r\n| join kind=leftouter proc on ProcGUID_g\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| project LastSeen, Computer, ProcName_s, ProcUser_s, DNSCount, UniqueDomains, EntropyHits\r\n| order by DNSCount desc\r\n",
+              "size": 0,
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+              ],
+              "visualization": "barchart",
+              "chartSettings": {
+                "xAxis": "UniqueDomains"
+              }
+            },
+            "name": "query - 1"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\n\r\nlet dns = uberAgentESA_Process_DnsQuery_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| summarize DNSCount = count(), \r\n            UniqueDomains = dcount(DnsRequest_s), \r\n            EntropyHits = countif(DnsRiskHighEntropy_d == 1),\r\n            LastSeen = max(TimeGenerated)\r\n  by ProcGUID_g, Computer, ProcName_s;\r\n\r\nlet proc = uberAgentESA_Process_ProcessStop_CL\r\n| project ProcGUID_g, ProcUser_s;\r\n\r\ndns\r\n| join kind=leftouter proc on ProcGUID_g\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| project LastSeen, Computer, ProcName_s, ProcUser_s, DNSCount, UniqueDomains, EntropyHits\r\n| order by DNSCount desc\r\n",
+              "size": 0,
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+              ]
+            },
+            "name": "query - 3"
+          }
+        ]
+      },
+      "customWidth": "50",
+      "name": "group - 15",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\n\r\nlet dns = uberAgentESA_Process_DnsQuery_CL\r\n| where DnsRiskHighEntropy_d == 1\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| summarize Count = count(), LastSeen = max(TimeGenerated) by ProcGUID_g, DnsRequest_s, ProcName_s, Computer;\r\n\r\nlet proc = uberAgentESA_Process_ProcessStop_CL\r\n| project ProcGUID_g, ProcUser_s;\r\n\r\ndns\r\n| join kind=leftouter proc on ProcGUID_g\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| project LastSeen, DnsRequest_s, ProcName_s, ProcUser_s, Computer, Count\r\n| top 20 by Count desc\r\n",
+        "size": 0,
+        "title": "High Entropy or Random Domains",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ],
+        "gridSettings": {
+          "sortBy": [
+            {
+              "itemKey": "Count",
+              "sortOrder": 2
+            }
+          ]
+        },
+        "sortBy": [
+          {
+            "itemKey": "Count",
+            "sortOrder": 2
+          }
+        ]
+      },
+      "name": "query - 5"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgentESA_Process_DnsQuery_CL\r\n| where DnsRisk52Chars_d == 1 or DnsRisk27UniqueChars_d == 1\r\n| summarize Count = count() by DnsRequest_s, Computer, ProcName_s\r\n| top 20 by Count desc\r\n",
+        "size": 4,
+        "title": "Unusually Long or Unique Character Domains",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "customWidth": "33",
+      "name": "query - 6",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgentESA_Process_DnsQuery_CL\r\n| where DnsRiskTXTRecord_d == 1\r\n| summarize Count = count() by DnsRequest_s, Computer, ProcName_s\r\n| top 20 by Count desc",
+        "size": 4,
+        "title": " DNS TXT Record Usage",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "customWidth": "33",
+      "name": "query - 7",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgentESA_Process_DnsQuery_CL\r\n| where DnsResponseStatus_d == 2  // NXDOMAIN\r\n| summarize Count = count() by DnsRequest_s, Computer, ProcName_s\r\n| top 20 by Count desc",
+        "size": 4,
+        "title": "Frequent NXDOMAIN Responses",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "customWidth": "33",
+      "name": "query - 8",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\n\r\nlet dns = uberAgentESA_Process_DnsQuery_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| summarize RequestCount = count() by bin(TimeGenerated, 5m), Computer, ProcName_s, ProcGUID_g\r\n| where RequestCount > 10;\r\n\r\nlet proc = uberAgentESA_Process_ProcessStop_CL\r\n| project ProcGUID_g, ProcUser_s;\r\n\r\ndns\r\n| join kind=leftouter proc on ProcGUID_g\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| project TimeGenerated, Computer, ProcName_s, ProcUser_s, RequestCount\r\n| order by Computer, ProcName_s, TimeGenerated asc\r\n",
+        "size": 0,
+        "title": "Beaconing Behavior (Repetitive DNS Requests)",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ],
+        "visualization": "timechart",
+        "chartSettings": {
+          "group": "ProcName_s",
+          "createOtherGroup": null
+        }
+      },
+      "name": "query - 8"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\n\r\nlet dns = uberAgentESA_Process_DnsQuery_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| extend TLD = tostring(split(DnsRequest_s, \".\")[-1])\r\n| summarize Count = count() by ProcGUID_g, Computer, TLD;\r\n\r\nlet proc = uberAgentESA_Process_ProcessStop_CL\r\n| project ProcGUID_g, ProcUser_s;\r\n\r\ndns\r\n| join kind=leftouter proc on ProcGUID_g\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| summarize Count = sum(Count) by TLD\r\n| order by Count asc\r\n",
+        "size": 0,
+        "title": "DNS Requests to Rare or Suspicious TLDs",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ],
+        "visualization": "barchart",
+        "gridSettings": {
+          "sortBy": [
+            {
+              "itemKey": "Count",
+              "sortOrder": 2
+            }
+          ]
+        },
+        "sortBy": [
+          {
+            "itemKey": "Count",
+            "sortOrder": 2
+          }
+        ]
+      },
+      "name": "query - 8"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let knownGood = dynamic([\"chrome.exe\", \"firefox.exe\", \"msedge.exe\", \"iexplore.exe\", \"system\"]);\r\nlet MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\n\r\nlet dns = uberAgentESA_Process_DnsQuery_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where ProcName_s !in (knownGood)\r\n| summarize Count = count() by ProcGUID_g, ProcName_s;\r\n\r\nlet proc = uberAgentESA_Process_ProcessStop_CL\r\n| project ProcGUID_g, ProcUser_s;\r\n\r\ndns\r\n| join kind=leftouter proc on ProcGUID_g\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| summarize TotalCount = sum(Count) by ProcName_s\r\n| top 20 by TotalCount desc\r\n\r\n",
+        "size": 0,
+        "title": " DNS Requests from Unusual Processes",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ],
+        "visualization": "barchart"
+      },
+      "name": "query - 9"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\n\r\nlet dns = uberAgentESA_Process_DnsQuery_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| summarize Count = count() by bin(TimeGenerated, 5m), ProcGUID_g, Computer;\r\n\r\nlet proc = uberAgentESA_Process_ProcessStop_CL\r\n| project ProcGUID_g, ProcUser_s;\r\n\r\ndns\r\n| join kind=leftouter proc on ProcGUID_g\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| summarize TotalCount = sum(Count) by bin(TimeGenerated, 5m)\r\n| order by TimeGenerated asc\r\n",
+        "size": 0,
+        "title": "Sudden Spikes in DNS Activity",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ],
+        "visualization": "linechart"
+      },
+      "name": "query - 10"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\n\r\nlet dns = uberAgentESA_Process_DnsQuery_CL\r\n| where DnsRequest_s matches regex @\"[A-Za-z0-9+/]{16,}={0,2}\\.\"\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| summarize Count = count(), LastSeen = max(TimeGenerated) \r\n  by ProcGUID_g, DnsRequest_s, ProcName_s, Computer;\r\n\r\nlet proc = uberAgentESA_Process_ProcessStop_CL\r\n| project ProcGUID_g, ProcUser_s;\r\n\r\ndns\r\n| join kind=leftouter proc on ProcGUID_g\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| project DnsRequest_s, ProcName_s, ProcUser_s, Computer, Count, LastSeen\r\n| top 10 by Count desc\r\n",
+        "size": 0,
+        "title": "Encoded Subdomains (Base64 or Hex Suspicion)",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 11"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\n\r\nlet dns = uberAgentESA_Process_DnsQuery_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| summarize TotalRequests = count(), \r\n            UniqueDomains = dcount(DnsRequest_s),\r\n            HighEntropyCount = countif(DnsRiskHighEntropy_d == 1)\r\n    by bin(TimeGenerated, 5m), ProcGUID_g, Computer, ProcName_s\r\n| where TotalRequests > 10;\r\n\r\nlet proc = uberAgentESA_Process_ProcessStop_CL\r\n| project ProcGUID_g, ProcUser_s;\r\n\r\ndns\r\n| join kind=leftouter proc on ProcGUID_g\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| project TimeGenerated, Computer, ProcName_s, ProcUser_s, TotalRequests, UniqueDomains, HighEntropyCount\r\n| order by Computer, ProcName_s, TimeGenerated asc\r\n",
+        "size": 0,
+        "title": "DNS Beaconing and High-Entropy Domain Activity by Process",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 12"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\n\r\nlet dns = uberAgentESA_Process_DnsQuery_CL\r\n| summarize DNSRequests = count(), UniqueDomains = dcount(DnsRequest_s), EntropyHits = countif(DnsRiskHighEntropy_d == 1)\r\n  by ProcGUID_g, Computer, ProcName_s;\r\n\r\nlet proc = uberAgentESA_Process_ProcessStop_CL\r\n| project ProcGUID_g, ProcUser_s, ProcCmdline_s, ProcLifetimeMs_d;\r\n\r\ndns\r\n| join kind=leftouter proc on ProcGUID_g\r\n| where (isempty(MachineFilter) or Computer has MachineFilter)\r\n  and (isempty(UserFilter) or ProcUser_s has UserFilter)\r\n| project Computer, ProcName_s, ProcCmdline_s, ProcUser_s, DNSRequests, UniqueDomains, EntropyHits, ProcLifetimeMs_d\r\n| order by EntropyHits desc\r\n",
+        "size": 0,
+        "title": "Suspicious DNS Requests with Command Line Context",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 13"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\n\r\nlet dns = uberAgentESA_Process_DnsQuery_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| summarize RequestCount = count(), LastSeen = max(TimeGenerated) by ProcGUID_g, Computer;\r\n\r\nlet proc = uberAgentESA_Process_ProcessStop_CL\r\n| project ProcGUID_g, ProcUser_s;\r\n\r\nlet dns_with_user = dns\r\n| join kind=leftouter proc on ProcGUID_g\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter;\r\n\r\nlet netinfo = uberAgent_System_NetworkConfigInformation_CL\r\n| summarize arg_max(TimeGenerated, *) by Computer;\r\n\r\ndns_with_user\r\n| join kind=leftouter netinfo on Computer\r\n| project LastSeen, Computer, ProcUser_s, NetworkConfigIPv4_s, NetworkConfigMACAddress_s, NetworkConfigIsConnectedToInternet_b, RequestCount\r\n| order by LastSeen desc\r\n\r\n",
+        "size": 0,
+        "title": "🌐 DNS Activity by Device with Network Configuration Detailss DNS Requests by User",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 14"
+    }
+  ],
+  "fallbackResourceIds": [
+    "azure monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
