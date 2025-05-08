@@ -57,6 +57,7 @@ The goal is to help others:
 
 - ### **Web Browsing Domains & Events**
 - **Chrome Browsing Details**
+- Instal the uberAgent Chrome Extension to collect data: https://chromewebstore.google.com/detail/uberagent/jghgedlkcoafeakcaepncnlanjkbinpb?hl=en
 ![image](https://github.com/user-attachments/assets/714517bc-ac55-4631-9ea1-a2be69e069e2)
 
 - ### **ESA Security Events**
