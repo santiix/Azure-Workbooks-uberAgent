@@ -10,6 +10,7 @@
             "id": "TimeRange",
             "version": "KqlParameterItem/1.0",
             "name": "TimeRange",
+            "label": "Time Range",
             "type": 4,
             "typeSettings": {
               "selectableValues": [
@@ -20,17 +21,40 @@
                   "durationMs": 3600000
                 },
                 {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
                   "durationMs": 86400000
                 },
                 {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
                   "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
                 }
               ],
               "allowCustom": true
             },
-            "label": "Time Range",
             "value": {
-              "durationMs": 1800000
+              "durationMs": 3600000
             }
           },
           {
