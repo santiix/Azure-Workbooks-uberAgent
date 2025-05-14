@@ -2,14 +2,6 @@
   "version": "Notebook/1.0",
   "items": [
     {
-      "type": 1,
-      "content": {
-        "json": "User Search: Use \\\\\\ for Domain\\\\\\User or just search by username",
-        "style": "warning"
-      },
-      "name": "text - 9"
-    },
-    {
       "type": 9,
       "content": {
         "version": "KqlParameterItem/1.0",
@@ -19,9 +11,6 @@
             "version": "KqlParameterItem/1.0",
             "name": "TimeRange",
             "type": 4,
-            "value": {
-              "durationMs": 86400000
-            },
             "typeSettings": {
               "selectableValues": [
                 {
@@ -39,7 +28,10 @@
               ],
               "allowCustom": true
             },
-            "label": "Time Range"
+            "label": "Time Range",
+            "value": {
+              "durationMs": 604800000
+            }
           },
           {
             "id": "Machine",
@@ -48,46 +40,6 @@
             "label": "Enter Server Name",
             "type": 1,
             "isRequired": true,
-            "value": "*"
-          },
-          {
-            "id": "User",
-            "version": "KqlParameterItem/1.0",
-            "name": "User",
-            "label": "Enter User",
-            "type": 1,
-            "value": "*"
-          },
-          {
-            "id": "SourceIP",
-            "version": "KqlParameterItem/1.0",
-            "name": "SourceIP",
-            "label": "Enter Source IP",
-            "type": 1,
-            "value": "*"
-          },
-          {
-            "id": "SourcePort",
-            "version": "KqlParameterItem/1.0",
-            "name": "SourcePort",
-            "label": "Enter Source Port",
-            "type": 1,
-            "value": "*"
-          },
-          {
-            "id": "TargetIP",
-            "version": "KqlParameterItem/1.0",
-            "name": "TargetIP",
-            "label": "Enter Target IP",
-            "type": 1,
-            "value": "*"
-          },
-          {
-            "id": "TargetPort",
-            "version": "KqlParameterItem/1.0",
-            "name": "TargetPort",
-            "label": "Enter Target Port",
-            "type": 1,
             "value": "*"
           }
         ],
@@ -101,25 +53,107 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\r\nlet UserFilter = iff('{User}' == '*' or isempty('{User}'), '', '{User}');\r\nlet SourceIPFilter = iff('{SourceIP}' == '*' or isempty('{SourceIP}'), '', '{SourceIP}');\r\nlet SourcePortFilter = iff('{SourcePort}' == '*' or isempty('{SourcePort}'), '', '{SourcePort}');\r\nlet TargetIPFilter = iff('{TargetIP}' == '*' or isempty('{TargetIP}'), '', '{TargetIP}');\r\nlet TargetPortFilter = iff('{TargetPort}' == '*' or isempty('{TargetPort}'), '', '{TargetPort}');\r\n\r\nlet NetworkData = \r\n    uberAgent_Process_NetworkTargetPerformance_CL\r\n    | where isempty(MachineFilter) or Computer has MachineFilter\r\n    | where isempty(UserFilter) or ProcUser_s has UserFilter\r\n    | where isempty(SourceIPFilter) or NetTargetSourceAddress_s has SourceIPFilter\r\n    | where isempty(SourcePortFilter) or tostring(NetTargetSourcePort_d) has SourcePortFilter\r\n    | where isempty(TargetIPFilter) or NetTargetRemoteAddress_s has TargetIPFilter\r\n    | where isempty(TargetPortFilter) or tostring(NetTargetRemotePort_d) has TargetPortFilter\r\n    | summarize \r\n        TotalSendMB = sum(NetTargetSendMB_d),\r\n        TotalReceiveMB = sum(NetTargetReceiveMB_d)\r\n      by AppId_s, ProcName_s;\r\n\r\nlet AppMap = \r\n    uberAgent_Application_AppNameIdMapping_CL\r\n    | summarize AppName = any(AppName_s) by AppId_s;\r\n\r\nNetworkData\r\n| join kind=leftouter (AppMap) on AppId_s\r\n| extend TotalMB = round(TotalSendMB + TotalReceiveMB, 2)\r\n| top 10 by TotalMB desc\r\n| project AppName, ProcName_s, TotalSendMB, TotalReceiveMB, TotalMB\r\n",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\n\r\nuberAgent_Application_ApplicationInventory_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| summarize InstallCount = count() by bin(TimeGenerated, 1d)\r\n| sort by TimeGenerated asc\r\n\r\n\r\n",
         "size": 0,
-        "aggregation": 3,
-        "title": "Top 10 Apps by Network Data Volume",
+        "title": "Install Count Over Time",
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
         "crossComponentResources": [
           "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
         ],
-        "visualization": "piechart",
+        "visualization": "barchart"
+      },
+      "customWidth": "50",
+      "name": "query - 2",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\n\r\nuberAgent_Application_ApplicationInventory_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| summarize Installs = count() by Publisher_s\r\n| where isnotempty(Publisher_s)\r\n| top 10 by Installs\r\n| project Publisher = Publisher_s, Installs",
+        "size": 0,
+        "title": "Top Installed Application Publishers",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ],
+        "visualization": "categoricalbar"
+      },
+      "customWidth": "50",
+      "name": "query - 3",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\n\r\nuberAgent_Application_ApplicationInventory_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| project TimeGenerated, Computer, DisplayName_s, DisplayVersion_s, InstallDate_s, InstallLocation_s, Publisher_s, IsMachineInstall_b, IsMsiPackage_b, Language_s\r\n| sort by TimeGenerated desc",
+        "size": 0,
+        "title": "Application Inventory ",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 0"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nuberAgent_Application_ApplicationInventory_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| summarize AppCount = dcount(DisplayName_s) by Computer\r\n| top 10 by AppCount desc\r\n",
+        "size": 0,
+        "title": "Top Machines by App Count",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ],
+        "visualization": "categoricalbar"
+      },
+      "customWidth": "50",
+      "name": "query - 4",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nuberAgent_Application_ApplicationInventory_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| summarize Count = count() by Language = coalesce(Language_s, \"Unknown\")\r\n| top 10 by Count\r\n",
+        "size": 0,
+        "title": "Language Distribution of Apps",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ],
+        "visualization": "categoricalbar",
         "tileSettings": {
           "showBorder": false,
           "titleContent": {
-            "columnMatch": "AppName",
+            "columnMatch": "Language",
             "formatter": 1
           },
           "leftContent": {
-            "columnMatch": "TotalSendMB",
+            "columnMatch": "Count",
             "formatter": 12,
             "formatOptions": {
               "palette": "auto"
@@ -132,118 +166,7 @@
               }
             }
           }
-        },
-        "graphSettings": {
-          "type": 0,
-          "topContent": {
-            "columnMatch": "AppName",
-            "formatter": 1
-          },
-          "centerContent": {
-            "columnMatch": "TotalSendMB",
-            "formatter": 1,
-            "numberFormat": {
-              "unit": 17,
-              "options": {
-                "maximumSignificantDigits": 3,
-                "maximumFractionDigits": 2
-              }
-            }
-          }
         }
-      },
-      "customWidth": "50",
-      "name": "query - 0",
-      "styleSettings": {
-        "showBorder": true
-      }
-    },
-    {
-      "type": 3,
-      "content": {
-        "version": "KqlItem/1.0",
-        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\r\nlet UserFilter = iff('{User}' == '*' or isempty('{User}'), '', '{User}');\r\nlet SourceIPFilter = iff('{SourceIP}' == '*' or isempty('{SourceIP}'), '', '{SourceIP}');\r\nlet SourcePortFilter = iff('{SourcePort}' == '*' or isempty('{SourcePort}'), '', '{SourcePort}');\r\nlet TargetIPFilter = iff('{TargetIP}' == '*' or isempty('{TargetIP}'), '', '{TargetIP}');\r\nlet TargetPortFilter = iff('{TargetPort}' == '*' or isempty('{TargetPort}'), '', '{TargetPort}');\r\n\r\nlet NetData = \r\n    uberAgent_Process_NetworkTargetPerformance_CL\r\n    | where isempty(MachineFilter) or Computer has MachineFilter\r\n    | where isempty(UserFilter) or ProcUser_s has UserFilter\r\n    | where isempty(SourceIPFilter) or NetTargetSourceAddress_s has SourceIPFilter\r\n    | where isempty(SourcePortFilter) or tostring(NetTargetSourcePort_d) has SourcePortFilter\r\n    | where isempty(TargetIPFilter) or NetTargetRemoteAddress_s has TargetIPFilter\r\n    | where isempty(TargetPortFilter) or tostring(NetTargetRemotePort_d) has TargetPortFilter\r\n    | summarize \r\n        AvgSendLatency = avg(NetTargetSendLatencyMs_d)\r\n      by AppId_s, ProcName_s;\r\n\r\nlet AppMap = \r\n    uberAgent_Application_AppNameIdMapping_CL\r\n    | summarize AppName = any(AppName_s) by AppId_s;\r\n\r\nNetData\r\n| join kind=leftouter (AppMap) on AppId_s\r\n| extend AvgLatencyMs = round(AvgSendLatency, 2)\r\n| top 10 by AvgLatencyMs desc\r\n| project AppName, ProcName_s, AvgLatencyMs\r\n",
-        "size": 0,
-        "aggregation": 3,
-        "title": "Top 10 Apps by Avg Network Latency (ms)",
-        "timeContextFromParameter": "TimeRange",
-        "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ],
-        "visualization": "barchart",
-        "chartSettings": {
-          "xAxis": "AppName"
-        }
-      },
-      "customWidth": "50",
-      "name": "query - 2",
-      "styleSettings": {
-        "showBorder": true
-      }
-    },
-    {
-      "type": 3,
-      "content": {
-        "version": "KqlItem/1.0",
-        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\r\nlet UserFilter = iff('{User}' == '*' or isempty('{User}'), '', '{User}');\r\nlet SourceIPFilter = iff('{SourceIP}' == '*' or isempty('{SourceIP}'), '', '{SourceIP}');\r\nlet SourcePortFilter = iff('{SourcePort}' == '*' or isempty('{SourcePort}'), '', '{SourcePort}');\r\nlet TargetIPFilter = iff('{TargetIP}' == '*' or isempty('{TargetIP}'), '', '{TargetIP}');\r\nlet TargetPortFilter = iff('{TargetPort}' == '*' or isempty('{TargetPort}'), '', '{TargetPort}');\r\n\r\nlet NetData =\r\n    uberAgent_Process_NetworkTargetPerformance_CL\r\n    | where isempty(MachineFilter) or Computer has MachineFilter\r\n    | where isempty(UserFilter) or ProcUser_s has UserFilter\r\n    | where isempty(SourceIPFilter) or NetTargetSourceAddress_s has SourceIPFilter\r\n    | where isempty(SourcePortFilter) or tostring(NetTargetSourcePort_d) has SourcePortFilter\r\n    | where isempty(TargetIPFilter) or NetTargetRemoteAddress_s has TargetIPFilter\r\n    | where isempty(TargetPortFilter) or tostring(NetTargetRemotePort_d) has TargetPortFilter\r\n    | summarize\r\n        Sends = sum(NetTargetSendCount_d),\r\n        Receives = sum(NetTargetReceiveCount_d),\r\n        Connects = sum(NetTargetConnectCount_d),\r\n        Reconnects = sum(NetTargetReconnectCount_d),\r\n        Retransmits = sum(NetTargetRetransmitCount_d),\r\n        SendVolumeMB = round(sum(NetTargetSendMB_d), 2),\r\n        ReceiveVolumeMB = round(sum(NetTargetReceiveMB_d), 2),\r\n        AvgInitialSendLatency = round(avg(NetTargetSendLatencyInitialMs_d), 2),\r\n        AvgSendJitter = round(avg(NetTargetSendJitterMs_d), 2),\r\n        SendLatencyCount = sum(NetTargetSendLatencyCount_d),\r\n        SendLatencyInitialCount = sum(NetTargetSendLatencyInitialCount_d),\r\n        SendJitterCount = sum(NetTargetSendJitterCount_d),\r\n        TargetCount = dcount(NetTargetRemoteAddress_s),\r\n        ProcessCount = dcount(ProcName_s),\r\n        UserCount = dcount(ProcUser_s),\r\n        HostCount = dcount(Computer)\r\n      by AppId_s;\r\n\r\nlet AppMap =\r\n    uberAgent_Application_AppNameIdMapping_CL\r\n    | summarize AppName = any(AppName_s) by AppId_s;\r\n\r\nNetData\r\n| join kind=leftouter (AppMap) on AppId_s\r\n| extend PacketLossPercent = iff(SendLatencyCount == 0, 0.0, round((SendLatencyCount - SendLatencyInitialCount) * 100.0 / SendLatencyCount, 2))\r\n| project\r\n    AppName,\r\n    Sends,\r\n    Receives,\r\n    Connects,\r\n    Reconnects,\r\n    Retransmits,\r\n    SendVolumeMB,\r\n    ReceiveVolumeMB,\r\n    AvgInitialSendLatency,\r\n    AvgSendJitter,\r\n    PacketLossPercent,\r\n    Targets = TargetCount,\r\n    Processes = ProcessCount,\r\n    Users = UserCount,\r\n    Hosts = HostCount\r\n| sort by SendVolumeMB desc\r\n",
-        "size": 0,
-        "title": "Network Statistics by Application",
-        "timeContextFromParameter": "TimeRange",
-        "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ],
-        "gridSettings": {
-          "sortBy": [
-            {
-              "itemKey": "Sends",
-              "sortOrder": 2
-            }
-          ]
-        },
-        "sortBy": [
-          {
-            "itemKey": "Sends",
-            "sortOrder": 2
-          }
-        ]
-      },
-      "name": "query - 3"
-    },
-    {
-      "type": 3,
-      "content": {
-        "version": "KqlItem/1.0",
-        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\r\nlet UserFilter = iff('{User}' == '*' or isempty('{User}'), '', '{User}');\r\nlet SourceIPFilter = iff('{SourceIP}' == '*' or isempty('{SourceIP}'), '', '{SourceIP}');\r\nlet SourcePortFilter = iff('{SourcePort}' == '*' or isempty('{SourcePort}'), '', '{SourcePort}');\r\nlet TargetIPFilter = iff('{TargetIP}' == '*' or isempty('{TargetIP}'), '', '{TargetIP}');\r\nlet TargetPortFilter = iff('{TargetPort}' == '*' or isempty('{TargetPort}'), '', '{TargetPort}');\r\n\r\nuberAgent_Process_NetworkTargetPerformance_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| where isempty(SourceIPFilter) or NetTargetSourceAddress_s has SourceIPFilter\r\n| where isempty(SourcePortFilter) or tostring(NetTargetSourcePort_d) has SourcePortFilter\r\n| where isempty(TargetIPFilter) or NetTargetRemoteAddress_s has TargetIPFilter\r\n| where isempty(TargetPortFilter) or tostring(NetTargetRemotePort_d) has TargetPortFilter\r\n| summarize\r\n    Sends = sum(NetTargetSendCount_d),\r\n    Receives = sum(NetTargetReceiveCount_d),\r\n    Connects = sum(NetTargetConnectCount_d),\r\n    Reconnects = sum(NetTargetReconnectCount_d),\r\n    Retransmits = sum(NetTargetRetransmitCount_d),\r\n    SendVolumeMB = round(sum(NetTargetSendMB_d), 2),\r\n    ReceiveVolumeMB = round(sum(NetTargetReceiveMB_d), 2),\r\n    AvgInitialSendLatency = round(avg(NetTargetSendLatencyInitialMs_d), 2),\r\n    AvgSendJitter = round(avg(NetTargetSendJitterMs_d), 2),\r\n    SendLatencyCount = sum(NetTargetSendLatencyCount_d),\r\n    SendLatencyInitialCount = sum(NetTargetSendLatencyInitialCount_d),\r\n    SendJitterCount = sum(NetTargetSendJitterCount_d),\r\n    Processes = dcount(ProcName_s),\r\n    Users = dcount(ProcUser_s),\r\n    Hosts = dcount(Computer)\r\n  by TargetIP = NetTargetRemoteAddress_s, SourceIP = NetTargetSourceAddress_s\r\n| extend PacketLossPercent = iff(SendLatencyCount == 0, 0.0, round((SendLatencyCount - SendLatencyInitialCount) * 100.0 / SendLatencyCount, 2))\r\n| project\r\n    SourceIP,\r\n    TargetIP,\r\n    Sends,\r\n    Receives,\r\n    Connects,\r\n    Reconnects,\r\n    Retransmits,\r\n    SendVolumeMB,\r\n    ReceiveVolumeMB,\r\n    AvgInitialSendLatency,\r\n    AvgSendJitter,\r\n    PacketLossPercent,\r\n    Processes,\r\n    Users,\r\n    Hosts\r\n| sort by SendVolumeMB desc\r\n\r\n",
-        "size": 0,
-        "title": "Network Statistics by IP ",
-        "timeContextFromParameter": "TimeRange",
-        "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
-      },
-      "name": "query - 4"
-    },
-    {
-      "type": 3,
-      "content": {
-        "version": "KqlItem/1.0",
-        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\r\nlet UserFilter = iff('{User}' == '*' or isempty('{User}'), '', '{User}');\r\nlet SourceIPFilter = iff('{SourceIP}' == '*' or isempty('{SourceIP}'), '', '{SourceIP}');\r\nlet SourcePortFilter = iff('{SourcePort}' == '*' or isempty('{SourcePort}'), '', '{SourcePort}');\r\nlet TargetIPFilter = iff('{TargetIP}' == '*' or isempty('{TargetIP}'), '', '{TargetIP}');\r\nlet TargetPortFilter = iff('{TargetPort}' == '*' or isempty('{TargetPort}'), '', '{TargetPort}');\r\n\r\nuberAgent_Process_NetworkTargetPerformance_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| where isempty(SourceIPFilter) or NetTargetSourceAddress_s has SourceIPFilter\r\n| where isempty(SourcePortFilter) or tostring(NetTargetSourcePort_d) has SourcePortFilter\r\n| where isempty(TargetIPFilter) or NetTargetRemoteAddress_s has TargetIPFilter\r\n| where isempty(TargetPortFilter) or tostring(NetTargetRemotePort_d) has TargetPortFilter\r\n| summarize \r\n    TotalSendMB = sum(NetTargetSendMB_d),\r\n    TotalReceiveMB = sum(NetTargetReceiveMB_d)\r\n    by bin(TimeGenerated, 1h)\r\n| extend TotalMB = round(TotalSendMB + TotalReceiveMB, 2)\r\n| project TimeGenerated, TotalSendMB, TotalReceiveMB, TotalMB\r\n| order by TimeGenerated asc\r\n\r\n",
-        "size": 0,
-        "aggregation": 2,
-        "title": "Data Volume Over Time",
-        "timeContextFromParameter": "TimeRange",
-        "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ],
-        "visualization": "unstackedbar"
       },
       "customWidth": "50",
       "name": "query - 5",
@@ -255,135 +178,31 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\r\nlet UserFilter = iff('{User}' == '*' or isempty('{User}'), '', '{User}');\r\nlet SourceIPFilter = iff('{SourceIP}' == '*' or isempty('{SourceIP}'), '', '{SourceIP}');\r\nlet SourcePortFilter = iff('{SourcePort}' == '*' or isempty('{SourcePort}'), '', '{SourcePort}');\r\nlet TargetIPFilter = iff('{TargetIP}' == '*' or isempty('{TargetIP}'), '', '{TargetIP}');\r\nlet TargetPortFilter = iff('{TargetPort}' == '*' or isempty('{TargetPort}'), '', '{TargetPort}');\r\n\r\nuberAgent_Process_NetworkTargetPerformance_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| where isempty(SourceIPFilter) or NetTargetSourceAddress_s has SourceIPFilter\r\n| where isempty(SourcePortFilter) or tostring(NetTargetSourcePort_d) has SourcePortFilter\r\n| where isempty(TargetIPFilter) or NetTargetRemoteAddress_s has TargetIPFilter\r\n| where isempty(TargetPortFilter) or tostring(NetTargetRemotePort_d) has TargetPortFilter\r\n| where NetTargetSendLatencyCount_d > 0\r\n| extend LatencyMs = NetTargetSendLatencyMs_d / NetTargetSendLatencyCount_d\r\n| summarize AvgLatencyMs = round(avg(LatencyMs), 2) by bin(TimeGenerated, 1h)\r\n| order by TimeGenerated asc\r\n",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\n\r\n// Installed apps\r\nlet InstalledApps =\r\n    uberAgent_Application_ApplicationInventory_CL\r\n    | where isempty(MachineFilter) or Computer has MachineFilter\r\n    | project Computer, AppName = tostring(DisplayName_s), Publisher = tostring(Publisher_s)\r\n    | summarize by Computer, AppName, Publisher;\r\n\r\n// Launched apps (from process data)\r\nlet LaunchedApps =\r\n    uberAgent_Process_ProcessDetail_CL\r\n    | where isempty(MachineFilter) or Computer has MachineFilter\r\n    | summarize LaunchCount = count() by Computer, AppName = tostring(ProcName_s);\r\n\r\n// Installed apps with launch info (leftouter join)\r\nlet InstalledJoin =\r\n    InstalledApps\r\n    | join kind=leftouter (LaunchedApps) on Computer, AppName\r\n    | extend WasLaunched = iff(isnull(LaunchCount) or LaunchCount == 0, \"No\", \"Yes\")\r\n    | project Computer, AppName, Publisher, LaunchCount = coalesce(LaunchCount, 0), WasLaunched, Source = \"Installed\";\r\n\r\n// Launched-only apps that were not in inventory (leftanti join)\r\nlet LaunchedOnly =\r\n    LaunchedApps\r\n    | join kind=leftanti (InstalledApps) on Computer, AppName\r\n    | extend Publisher = \"Not Installed\", WasLaunched = \"Yes\"\r\n    | project Computer, AppName, Publisher, LaunchCount, WasLaunched, Source = \"Launched Only\";\r\n\r\n// Combine both\r\nInstalledJoin\r\n| union LaunchedOnly\r\n| sort by WasLaunched asc, LaunchCount desc, AppName asc\r\n\r\n",
         "size": 0,
-        "aggregation": 3,
-        "title": "Average Latency Over Time",
+        "title": "Installed and Launched Apps",
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
         "crossComponentResources": [
           "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
         ],
-        "visualization": "timechart"
-      },
-      "customWidth": "50",
-      "name": "query - 6",
-      "styleSettings": {
-        "showBorder": true
-      }
-    },
-    {
-      "type": 3,
-      "content": {
-        "version": "KqlItem/1.0",
-        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\r\nlet UserFilter = iff('{User}' == '*' or isempty('{User}'), '', '{User}');\r\nlet SourceIPFilter = iff('{SourceIP}' == '*' or isempty('{SourceIP}'), '', '{SourceIP}');\r\nlet SourcePortFilter = iff('{SourcePort}' == '*' or isempty('{SourcePort}'), '', '{SourcePort}');\r\nlet TargetIPFilter = iff('{TargetIP}' == '*' or isempty('{TargetIP}'), '', '{TargetIP}');\r\nlet TargetPortFilter = iff('{TargetPort}' == '*' or isempty('{TargetPort}'), '', '{TargetPort}');\r\n\r\nlet NetData = \r\n    uberAgent_Process_NetworkTargetPerformance_CL\r\n    | where isempty(MachineFilter) or Computer has MachineFilter\r\n    | where isempty(UserFilter) or ProcUser_s has UserFilter\r\n    | where isempty(SourceIPFilter) or NetTargetSourceAddress_s has SourceIPFilter\r\n    | where isempty(SourcePortFilter) or tostring(NetTargetSourcePort_d) has SourcePortFilter\r\n    | where isempty(TargetIPFilter) or NetTargetRemoteAddress_s has TargetIPFilter\r\n    | where isempty(TargetPortFilter) or tostring(NetTargetRemotePort_d) has TargetPortFilter\r\n    | summarize \r\n        Reconnects = sum(NetTargetReconnectCount_d),\r\n        Retransmits = sum(NetTargetRetransmitCount_d),\r\n        Connects = sum(NetTargetConnectCount_d),\r\n        Hosts = dcount(Computer),\r\n        Users = dcount(ProcUser_s)\r\n      by AppId_s, ProcName_s;\r\n\r\nlet AppMap = \r\n    uberAgent_Application_AppNameIdMapping_CL\r\n    | summarize AppName = any(AppName_s) by AppId_s;\r\n\r\nNetData\r\n| join kind=leftouter (AppMap) on AppId_s\r\n| project AppName, ProcName_s, Connects, Reconnects, Retransmits, Hosts, Users\r\n| top 10 by Reconnects desc\r\n",
-        "size": 0,
-        "aggregation": 3,
-        "title": "Unstable Connections by Application",
-        "timeContextFromParameter": "TimeRange",
-        "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ],
-        "visualization": "categoricalbar",
-        "graphSettings": {
-          "type": 0,
-          "topContent": {
-            "columnMatch": "AppName",
-            "formatter": 1
-          },
-          "centerContent": {
-            "columnMatch": "Connects",
-            "formatter": 1,
-            "numberFormat": {
-              "unit": 17,
-              "options": {
-                "maximumSignificantDigits": 3,
-                "maximumFractionDigits": 2
-              }
+        "gridSettings": {
+          "sortBy": [
+            {
+              "itemKey": "LaunchCount",
+              "sortOrder": 2
             }
-          }
+          ]
         },
-        "chartSettings": {
-          "showLegend": true
-        }
-      },
-      "customWidth": "50",
-      "name": "query - 7",
-      "styleSettings": {
-        "showBorder": true
-      }
-    },
-    {
-      "type": 3,
-      "content": {
-        "version": "KqlItem/1.0",
-        "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\r\nlet UserFilter = iff('{User}' == '*' or isempty('{User}'), '', '{User}');\r\nlet SourceIPFilter = iff('{SourceIP}' == '*' or isempty('{SourceIP}'), '', '{SourceIP}');\r\nlet TargetIPFilter = iff('{TargetIP}' == '*' or isempty('{TargetIP}'), '', '{TargetIP}');\r\n\r\nuberAgent_Process_NetworkTargetPerformance_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| where isempty(SourceIPFilter) or NetTargetSourceAddress_s has SourceIPFilter\r\n| where isempty(TargetIPFilter) or NetTargetRemoteAddress_s has TargetIPFilter\r\n| summarize TotalConnections = sum(NetTargetConnectCount_d)\r\n    by bin(TimeGenerated, 5m), ProcName_s\r\n| project TimeGenerated, App = ProcName_s, TotalConnections\r\n| summarize TotalConnections = sum(TotalConnections) by TimeGenerated, App\r\n| top 100 by TotalConnections\r\n| render timechart\r\n",
-        "size": 0,
-        "aggregation": 3,
-        "title": "Top Chatty Apps with Connection Spikes Over Time",
-        "timeContextFromParameter": "TimeRange",
-        "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ],
-        "visualization": "barchart"
-      },
-      "customWidth": "50",
-      "name": "query - 8",
-      "styleSettings": {
-        "showBorder": true
-      }
-    },
-    {
-      "type": 12,
-      "content": {
-        "version": "NotebookGroup/1.0",
-        "groupType": "editable",
-        "items": [
+        "sortBy": [
           {
-            "type": 3,
-            "content": {
-              "version": "KqlItem/1.0",
-              "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\r\nlet UserFilter = iff('{User}' == '*' or isempty('{User}'), '', '{User}');\r\nlet SourceIPFilter = iff('{SourceIP}' == '*' or isempty('{SourceIP}'), '', '{SourceIP}');\r\nlet TargetIPFilter = iff('{TargetIP}' == '*' or isempty('{TargetIP}'), '', '{TargetIP}');\r\n\r\nuberAgent_Process_NetworkTargetPerformance_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| where isempty(SourceIPFilter) or NetTargetSourceAddress_s has SourceIPFilter\r\n| where isempty(TargetIPFilter) or NetTargetRemoteAddress_s has TargetIPFilter\r\n| summarize AvgSendLatencyMs = avg(NetTargetSendLatencyMs_d)\r\n    by bin(TimeGenerated, 1h), Computer, NetTargetRemoteAddress_s\r\n| project \r\n    TimeGenerated,\r\n    [\"Machine\"] = Computer,\r\n    [\"Remote Server\"] = NetTargetRemoteAddress_s,\r\n    [\"Avg Send Latency (ms)\"] = round(AvgSendLatencyMs, 1)\r\n| order by TimeGenerated asc\r\n| render timechart\r\n",
-              "size": 0,
-              "title": "Average Network Send Latency by Machine (per hour)",
-              "timeContextFromParameter": "TimeRange",
-              "queryType": 0,
-              "resourceType": "microsoft.operationalinsights/workspaces",
-              "crossComponentResources": [
-                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-              ],
-              "visualization": "barchart",
-              "chartSettings": {
-                "group": "Machine",
-                "createOtherGroup": null
-              }
-            },
-            "name": "query - 10"
-          },
-          {
-            "type": 3,
-            "content": {
-              "version": "KqlItem/1.0",
-              "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\r\nlet UserFilter = iff('{User}' == '*' or isempty('{User}'), '', '{User}');\r\nlet SourceIPFilter = iff('{SourceIP}' == '*' or isempty('{SourceIP}'), '', '{SourceIP}');\r\nlet TargetIPFilter = iff('{TargetIP}' == '*' or isempty('{TargetIP}'), '', '{TargetIP}');\r\n\r\nuberAgent_Process_NetworkTargetPerformance_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| where isempty(SourceIPFilter) or NetTargetSourceAddress_s has SourceIPFilter\r\n| where isempty(TargetIPFilter) or NetTargetRemoteAddress_s has TargetIPFilter\r\n| summarize AvgSendLatencyMs = avg(NetTargetSendLatencyMs_d)\r\n    by bin(TimeGenerated, 1h), Computer, NetTargetRemoteAddress_s\r\n| project \r\n    TimeGenerated,\r\n    [\"Machine\"] = Computer,\r\n    [\"Remote Server\"] = NetTargetRemoteAddress_s,\r\n    [\"Avg Send Latency (ms)\"] = round(AvgSendLatencyMs, 1)\r\n| order by TimeGenerated asc\r\n| render timechart\r\n",
-              "size": 1,
-              "timeContextFromParameter": "TimeRange",
-              "queryType": 0,
-              "resourceType": "microsoft.operationalinsights/workspaces",
-              "crossComponentResources": [
-                "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-              ],
-              "visualization": "table"
-            },
-            "name": "query - 1"
+            "itemKey": "LaunchCount",
+            "sortOrder": 2
           }
         ]
       },
-      "name": "group - 11"
+      "name": "query - 6"
     }
   ],
   "fallbackResourceIds": [
