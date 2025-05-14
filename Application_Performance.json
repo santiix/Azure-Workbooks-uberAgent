@@ -12,10 +12,16 @@
             "name": "TimeRange",
             "type": 4,
             "value": {
-              "durationMs": 604800000
+              "durationMs": 3600000
             },
             "typeSettings": {
               "selectableValues": [
+                {
+                  "durationMs": 300000
+                },
+                {
+                  "durationMs": 900000
+                },
                 {
                   "durationMs": 1800000
                 },
@@ -23,10 +29,40 @@
                   "durationMs": 3600000
                 },
                 {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
                   "durationMs": 86400000
                 },
                 {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 345600000
+                },
+                {
                   "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
                 }
               ],
               "allowCustom": true
@@ -38,6 +74,14 @@
             "version": "KqlParameterItem/1.0",
             "name": "Machine",
             "label": "Enter Server Name (* for all)",
+            "type": 1,
+            "value": "*"
+          },
+          {
+            "id": "AppName",
+            "version": "KqlParameterItem/1.0",
+            "name": "AppName",
+            "label": "Enter App Name (* for all)",
             "type": 1,
             "value": "*"
           }
@@ -52,8 +96,8 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "uberAgent_Process_ProcessDetail_CL\n| where '{Machine}' == '*' or Computer contains '{Machine}'\n| summarize AvgCPU=avg(ProcCPUPercent_d) by ProcName_s, bin(TimeGenerated, 5m)\n| render timechart",
-        "size": 1,
+        "query": "uberAgent_Process_ProcessDetail_CL\n| where '{Machine}' == '*' or Computer contains '{Machine}'\n| where '{AppName}' == '*' or ProcName_s contains '{AppName}'\n| summarize AvgCPU=avg(ProcCPUPercent_d) by ProcName_s, bin(TimeGenerated, 5m)\n| render timechart",
+        "size": 0,
         "aggregation": 3,
         "title": "Process CPU Usage (Top Processes)",
         "timeContextFromParameter": "TimeRange",
@@ -61,28 +105,36 @@
         "resourceType": "microsoft.operationalinsights/workspaces",
         "visualization": "timechart"
       },
-      "name": "ProcCPU"
+      "customWidth": "50",
+      "name": "ProcCPU",
+      "styleSettings": {
+        "showBorder": true
+      }
     },
     {
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "uberAgent_Process_ProcessDetail_CL\n| where '{Machine}' == '*' or Computer contains '{Machine}'\n| summarize AvgRAM=avg(ProcWorkingSetMB_d) by ProcName_s, bin(TimeGenerated, 5m)\n| render timechart",
-        "size": 1,
-        "aggregation": 3,
+        "query": "uberAgent_Process_ProcessDetail_CL\n| where '{Machine}' == '*' or Computer contains '{Machine}'\n| where '{AppName}' == '*' or ProcName_s contains '{AppName}'\n| summarize AvgRAM=avg(ProcWorkingSetMB_d) by ProcName_s, bin(TimeGenerated, 5m)\n| render timechart",
+        "size": 0,
+        "aggregation": 2,
         "title": "Process RAM Usage (MB)",
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
         "visualization": "timechart"
       },
-      "name": "ProcRAM"
+      "customWidth": "50",
+      "name": "ProcRAM",
+      "styleSettings": {
+        "showBorder": true
+      }
     },
     {
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "uberAgent_Process_ProcessDetail_CL\n| where '{Machine}' == '*' or Computer contains '{Machine}'\n| summarize AvgIO=avg(ProcIOReadCount_d + ProcIOWriteCount_d) by ProcName_s, bin(TimeGenerated, 5m)\n| render timechart",
+        "query": "uberAgent_Process_ProcessDetail_CL\n| where '{Machine}' == '*' or Computer contains '{Machine}'\n| where '{AppName}' == '*' or ProcName_s contains '{AppName}'\n| summarize AvgIO=avg(ProcIOReadCount_d + ProcIOWriteCount_d) by ProcName_s, bin(TimeGenerated, 5m)\n| render timechart",
         "size": 1,
         "aggregation": 3,
         "title": "Process IO Count",
@@ -97,7 +149,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let detail = \n    uberAgent_Process_ProcessDetail_CL\n    | where '{Machine}' == '*' or Computer contains '{Machine}'\n    | summarize \n        TotalCPUTime = round(avg(ProcCPUTimeMs_d / 1000.0), 2),\n        CPUPercent = round(avg(ProcCPUPercent_d), 2),\n        IOCount = round(avg(ProcIOReadCount_d + ProcIOWriteCount_d), 2),\n        IOMB = round(avg(ProcIOReadMB_d + ProcIOWriteMB_d), 2),\n        IOLatency = round(avg(ProcIOLatencyReadMs2_d + ProcIOLatencyWriteMs2_d), 2),\n        RAMMB = round(avg(ProcWorkingSetMB_d), 2),\n        NetKBPS = round(avg(ProcNetKBPS_d), 2),\n        LastSeen = max(TimeGenerated)\n    by ProcName_s, Computer;\n\nlet stats = \n    uberAgent_Process_ProcessStatistics_CL\n    | where '{Machine}' == '*' or Computer contains '{Machine}'\n    | summarize \n        PrivateMB = round(avg(ProcPrivateMB_d), 2),\n        VirtualMB = round(avg(ProcVirtualSizeMB_d), 2),\n        PageFaults = round(avg(ProcPageFaultsPS_d), 2),\n        PageFileMB = round(avg(ProcPageFileMB_d), 2),\n        ThreadCount = round(avg(ProcThreadCount_d), 2)\n    by ProcName_s, Computer;\n\ndetail\n| join kind=leftouter stats on ProcName_s, Computer\n| project \n    Computer,\n    ['Process Name'] = ProcName_s,\n    ['Total CPU time (s)'] = TotalCPUTime,\n    ['CPU (%)'] = CPUPercent,\n    ['Total IO (count)'] = IOCount,\n    ['Total IO (MB)'] = IOMB,\n    ['Avg. IO latency (ms)'] = IOLatency,\n    ['RAM (MB)'] = RAMMB,\n    ['Net thruput (KB/s)'] = NetKBPS,\n    ['Thread count'] = ThreadCount,\n    ['RAM - Private (MB)'] = PrivateMB,\n    ['RAM - Virtual (MB)'] = VirtualMB,\n    ['Page faults (per s)'] = PageFaults,\n    ['Page file (MB)'] = PageFileMB,\n    ['Last Seen'] = LastSeen\n| sort by ['CPU (%)'] desc\n| take 100\n",
+        "query": "let detail = \n    uberAgent_Process_ProcessDetail_CL\n    | where '{Machine}' == '*' or Computer contains '{Machine}'\n    | where '{AppName}' == '*' or ProcName_s contains '{AppName}'\n    | summarize \n        TotalCPUTime = round(avg(ProcCPUTimeMs_d / 1000.0), 2),\n        CPUPercent = round(avg(ProcCPUPercent_d), 2),\n        IOCount = round(avg(ProcIOReadCount_d + ProcIOWriteCount_d), 2),\n        IOMB = round(avg(ProcIOReadMB_d + ProcIOWriteMB_d), 2),\n        IOLatency = round(avg(ProcIOLatencyReadMs2_d + ProcIOLatencyWriteMs2_d), 2),\n        RAMMB = round(avg(ProcWorkingSetMB_d), 2),\n        NetKBPS = round(avg(ProcNetKBPS_d), 2),\n        LastSeen = max(TimeGenerated)\n    by ProcName_s, Computer;\n\nlet stats = \n    uberAgent_Process_ProcessStatistics_CL\n    | where '{Machine}' == '*' or Computer contains '{Machine}'\n    | where '{AppName}' == '*' or ProcName_s contains '{AppName}'\n    | summarize \n        PrivateMB = round(avg(ProcPrivateMB_d), 2),\n        VirtualMB = round(avg(ProcVirtualSizeMB_d), 2),\n        PageFaults = round(avg(ProcPageFaultsPS_d), 2),\n        PageFileMB = round(avg(ProcPageFileMB_d), 2),\n        ThreadCount = round(avg(ProcThreadCount_d), 2)\n    by ProcName_s, Computer;\n\ndetail\n| join kind=leftouter stats on ProcName_s, Computer\n| project \n    Computer,\n    ['Process Name'] = ProcName_s,\n    ['Total CPU time (s)'] = TotalCPUTime,\n    ['CPU (%)'] = CPUPercent,\n    ['Total IO (count)'] = IOCount,\n    ['Total IO (MB)'] = IOMB,\n    ['Avg. IO latency (ms)'] = IOLatency,\n    ['RAM (MB)'] = RAMMB,\n    ['Net thruput (KB/s)'] = NetKBPS,\n    ['Thread count'] = ThreadCount,\n    ['RAM - Private (MB)'] = PrivateMB,\n    ['RAM - Virtual (MB)'] = VirtualMB,\n    ['Page faults (per s)'] = PageFaults,\n    ['Page file (MB)'] = PageFileMB,\n    ['Last Seen'] = LastSeen\n| sort by ['CPU (%)'] desc\n| take 100",
         "size": 2,
         "title": "Running Processes - Resource Overview",
         "timeContextFromParameter": "TimeRange",
@@ -107,14 +159,14 @@
         "gridSettings": {
           "sortBy": [
             {
-              "itemKey": "CPU (%)",
+              "itemKey": "Total CPU time (s)",
               "sortOrder": 2
             }
           ]
         },
         "sortBy": [
           {
-            "itemKey": "CPU (%)",
+            "itemKey": "Total CPU time (s)",
             "sortOrder": 2
           }
         ]
