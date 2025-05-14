@@ -4,7 +4,7 @@
     {
       "type": 1,
       "content": {
-        "json": "User Search: use \\\\\\ for Domain\\\\\\User",
+        "json": "User Search: use \\\\\\ for Domain\\\\\\User or Username",
         "style": "warning"
       },
       "name": "text - 9"
@@ -98,22 +98,6 @@
             "type": 1,
             "label": "Machine Catalog",
             "value": "*"
-          },
-          {
-            "id": "SourceIP",
-            "version": "KqlParameterItem/1.0",
-            "name": "SourceIP",
-            "type": 1,
-            "label": "Source IP",
-            "value": "*"
-          },
-          {
-            "id": "TargetIP",
-            "version": "KqlParameterItem/1.0",
-            "name": "TargetIP",
-            "type": 1,
-            "label": "Target IP",
-            "value": "*"
           }
         ],
         "style": "pills",
@@ -126,7 +110,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\nlet CatalogFilter = iff(\"{Catalog}\" == \"*\" or isempty(\"{Catalog}\"), \"\", \"{Catalog}\");\r\nlet SourceIPFilter = iff(\"{SourceIP}\" == \"*\" or isempty(\"{SourceIP}\"), \"\", \"{SourceIP}\");\r\nlet TargetIPFilter = iff(\"{TargetIP}\" == \"*\" or isempty(\"{TargetIP}\"), \"\", \"{TargetIP}\");\r\n\r\nlet AppNames = \r\n    uberAgent_Application_AppNameIdMapping_CL\r\n    | summarize AppName = any(AppName_s) by AppId_s;\r\n\r\nuberAgent_Process_ProcessDetail_CL\r\n| where SessionID_d > 0\r\n| where isnotempty(AppId_s) and AppId_s !contains \"OS\"\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| where isempty(SourceIPFilter) or Source_s has SourceIPFilter\r\n| where isempty(TargetIPFilter) or SourceType_s has TargetIPFilter\r\n| join kind=leftouter (AppNames) on AppId_s\r\n| summarize \r\n    AppNameCount = dcount(AppName),\r\n    VersionCount = dcount(AppVersion_s),\r\n    UserCount = dcount(ProcUser_s),\r\n    HostCount = dcount(Computer)\r\n",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\nlet CatalogFilter = iff(\"{Catalog}\" == \"*\" or isempty(\"{Catalog}\"), \"\", \"{Catalog}\");\r\n\r\nlet AppNames = \r\n    uberAgent_Application_AppNameIdMapping_CL\r\n    | summarize AppName = any(AppName_s) by AppId_s;\r\n\r\nuberAgent_Process_ProcessDetail_CL\r\n| where SessionID_d > 0\r\n| where isnotempty(AppId_s) and AppId_s !contains \"OS\"\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| join kind=leftouter (AppNames) on AppId_s\r\n| summarize \r\n    AppNameCount = dcount(AppName),\r\n    VersionCount = dcount(AppVersion_s),\r\n    UserCount = dcount(ProcUser_s),\r\n    HostCount = dcount(Computer)\r\n",
         "size": 3,
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
@@ -165,7 +149,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\nlet CatalogFilter = iff(\"{Catalog}\" == \"*\" or isempty(\"{Catalog}\"), \"\", \"{Catalog}\");\r\nlet SourceIPFilter = iff(\"{SourceIP}\" == \"*\" or isempty(\"{SourceIP}\"), \"\", \"{SourceIP}\");\r\nlet TargetIPFilter = iff(\"{TargetIP}\" == \"*\" or isempty(\"{TargetIP}\"), \"\", \"{TargetIP}\");\r\n\r\nuberAgent_Session_SessionDetail_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or SessionUser_s has UserFilter\r\n| where isempty(CatalogFilter) or SessionPublishedName_s has CatalogFilter\r\n| where isempty(SourceIPFilter) or SessionClientIp_s has SourceIPFilter\r\n| where isempty(TargetIPFilter) or SessionBrokerRemoteIpVmw_s has TargetIPFilter\r\n| where isnotempty(SessionFgAppId_s)\r\n| summarize AppUsageCount = count() by SessionFgAppId_s\r\n| top 10 by AppUsageCount\r\n| project AppName = SessionFgAppId_s, AppUsageCount\r\n| render barchart\r\n",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\nlet CatalogFilter = iff(\"{Catalog}\" == \"*\" or isempty(\"{Catalog}\"), \"\", \"{Catalog}\");\r\n\r\nuberAgent_Session_SessionDetail_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or SessionUser_s has UserFilter\r\n| where isempty(CatalogFilter) or SessionPublishedName_s has CatalogFilter\r\n| where isnotempty(SessionFgAppId_s)\r\n| summarize AppUsageCount = count() by SessionFgAppId_s\r\n| top 10 by AppUsageCount\r\n| project AppName = SessionFgAppId_s, AppUsageCount\r\n| render barchart\r\n",
         "size": 0,
         "title": "Foreground application over time (%)",
         "timeContextFromParameter": "TimeRange",
@@ -190,7 +174,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\nlet CatalogFilter = iff(\"{Catalog}\" == \"*\" or isempty(\"{Catalog}\"), \"\", \"{Catalog}\");\r\nlet SourceIPFilter = iff(\"{SourceIP}\" == \"*\" or isempty(\"{SourceIP}\"), \"\", \"{SourceIP}\");\r\nlet TargetIPFilter = iff(\"{TargetIP}\" == \"*\" or isempty(\"{TargetIP}\"), \"\", \"{TargetIP}\");\r\n\r\nlet TotalCount = toscalar(\r\n    uberAgent_Session_SessionDetail_CL\r\n    | where isnotempty(SessionFgAppId_s)\r\n    | where isempty(MachineFilter) or Computer has MachineFilter\r\n    | where isempty(UserFilter) or SessionUser_s has UserFilter\r\n    | summarize TotalCount = count()\r\n);\r\n\r\nuberAgent_Session_SessionDetail_CL\r\n| where isnotempty(SessionFgAppId_s)\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or SessionUser_s has UserFilter\r\n| summarize CountSessionFgAppId = count() by SessionFgAppId_s\r\n| join kind=leftouter (\r\n    uberAgent_Application_AppNameIdMapping_CL\r\n    | summarize AppName = any(AppName_s) by AppId_s\r\n) on $left.SessionFgAppId_s == $right.AppId_s\r\n| extend [\"App in foreground (%)\"] = round(CountSessionFgAppId * 100.0 / TotalCount, 1)\r\n| project AppName, [\"App in foreground (%)\"]\r\n| order by [\"App in foreground (%)\"] desc\r\n| top 10 by [\"App in foreground (%)\"]\r\n",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\nlet CatalogFilter = iff(\"{Catalog}\" == \"*\" or isempty(\"{Catalog}\"), \"\", \"{Catalog}\");\r\n\r\nlet TotalCount = toscalar(\r\n    uberAgent_Session_SessionDetail_CL\r\n    | where isnotempty(SessionFgAppId_s)\r\n    | where isempty(MachineFilter) or Computer has MachineFilter\r\n    | where isempty(UserFilter) or SessionUser_s has UserFilter\r\n    | summarize TotalCount = count()\r\n);\r\n\r\nuberAgent_Session_SessionDetail_CL\r\n| where isnotempty(SessionFgAppId_s)\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or SessionUser_s has UserFilter\r\n| summarize CountSessionFgAppId = count() by SessionFgAppId_s\r\n| join kind=leftouter (\r\n    uberAgent_Application_AppNameIdMapping_CL\r\n    | summarize AppName = any(AppName_s) by AppId_s\r\n) on $left.SessionFgAppId_s == $right.AppId_s\r\n| extend [\"App in foreground (%)\"] = round(CountSessionFgAppId * 100.0 / TotalCount, 1)\r\n| project AppName, [\"App in foreground (%)\"]\r\n| order by [\"App in foreground (%)\"] desc\r\n| top 10 by [\"App in foreground (%)\"]\r\n",
         "size": 0,
         "title": "Foreground application (top 10)",
         "timeContextFromParameter": "TimeRange",
@@ -220,7 +204,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\nlet CatalogFilter = iff(\"{Catalog}\" == \"*\" or isempty(\"{Catalog}\"), \"\", \"{Catalog}\");\r\nlet SourceIPFilter = iff(\"{SourceIP}\" == \"*\" or isempty(\"{SourceIP}\"), \"\", \"{SourceIP}\");\r\nlet TargetIPFilter = iff(\"{TargetIP}\" == \"*\" or isempty(\"{TargetIP}\"), \"\", \"{TargetIP}\");\r\n\r\nlet TotalCount = toscalar(\r\n    uberAgent_Session_SessionDetail_CL\r\n    | where isnotempty(SessionFgProcessName_s)\r\n    | where isempty(MachineFilter) or Computer has MachineFilter\r\n    | where isempty(UserFilter) or SessionUser_s has UserFilter\r\n    | summarize TotalCount = count()\r\n);\r\n\r\nuberAgent_Session_SessionDetail_CL\r\n| where isnotempty(SessionFgProcessName_s)\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or SessionUser_s has UserFilter\r\n| summarize CountSessionFgProcessName = count() by SessionFgProcessName_s\r\n| extend [\"Process in foreground (%)\"] = round(CountSessionFgProcessName * 100.0 / TotalCount, 1)\r\n| project SessionFgProcessName_s, [\"Process in foreground (%)\"]\r\n| order by [\"Process in foreground (%)\"] desc\r\n| top 10 by [\"Process in foreground (%)\"]\r\n",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\nlet CatalogFilter = iff(\"{Catalog}\" == \"*\" or isempty(\"{Catalog}\"), \"\", \"{Catalog}\");\r\n\r\nlet TotalCount = toscalar(\r\n    uberAgent_Session_SessionDetail_CL\r\n    | where isnotempty(SessionFgProcessName_s)\r\n    | where isempty(MachineFilter) or Computer has MachineFilter\r\n    | where isempty(UserFilter) or SessionUser_s has UserFilter\r\n    | summarize TotalCount = count()\r\n);\r\n\r\nuberAgent_Session_SessionDetail_CL\r\n| where isnotempty(SessionFgProcessName_s)\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or SessionUser_s has UserFilter\r\n| summarize CountSessionFgProcessName = count() by SessionFgProcessName_s\r\n| extend [\"Process in foreground (%)\"] = round(CountSessionFgProcessName * 100.0 / TotalCount, 1)\r\n| project SessionFgProcessName_s, [\"Process in foreground (%)\"]\r\n| order by [\"Process in foreground (%)\"] desc\r\n| top 10 by [\"Process in foreground (%)\"]\r\n",
         "size": 0,
         "title": "Foreground process (top 10)",
         "timeContextFromParameter": "TimeRange",
@@ -247,7 +231,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\nlet CatalogFilter = iff(\"{Catalog}\" == \"*\" or isempty(\"{Catalog}\"), \"\", \"{Catalog}\");\r\nlet SourceIPFilter = iff(\"{SourceIP}\" == \"*\" or isempty(\"{SourceIP}\"), \"\", \"{SourceIP}\");\r\nlet TargetIPFilter = iff(\"{TargetIP}\" == \"*\" or isempty(\"{TargetIP}\"), \"\", \"{TargetIP}\");\r\n\r\nlet AppMap = \r\n    uberAgent_Application_AppNameIdMapping_CL\r\n    | summarize AppName = any(AppName_s) by AppId_s;\r\n\r\nuberAgent_Process_ProcessDetail_CL\r\n| where SessionID_d > 0\r\n| where isnotempty(AppId_s) and AppId_s !contains \"OS\"\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| where isempty(SourceIPFilter) or Source_s has SourceIPFilter\r\n| where isempty(TargetIPFilter) or SourceType_s has TargetIPFilter\r\n| join kind=leftouter (AppMap) on AppId_s\r\n| summarize [\"#Users\"] = dcount(ProcUser_s) by AppName\r\n| order by [\"#Users\"] desc\r\n| top 10 by [\"#Users\"]\r\n| project Name = AppName, [\"#Users\"]\r\n",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\nlet CatalogFilter = iff(\"{Catalog}\" == \"*\" or isempty(\"{Catalog}\"), \"\", \"{Catalog}\");\r\n\r\nlet AppMap = \r\n    uberAgent_Application_AppNameIdMapping_CL\r\n    | summarize AppName = any(AppName_s) by AppId_s;\r\n\r\nuberAgent_Process_ProcessDetail_CL\r\n| where SessionID_d > 0\r\n| where isnotempty(AppId_s) and AppId_s !contains \"OS\"\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| join kind=leftouter (AppMap) on AppId_s\r\n| summarize [\"#Users\"] = dcount(ProcUser_s) by AppName\r\n| order by [\"#Users\"] desc\r\n| top 10 by [\"#Users\"]\r\n| project Name = AppName, [\"#Users\"]\r\n",
         "size": 0,
         "title": "Number of users running an application (top 10)",
         "timeContextFromParameter": "TimeRange",
@@ -276,7 +260,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\nlet CatalogFilter = iff(\"{Catalog}\" == \"*\" or isempty(\"{Catalog}\"), \"\", \"{Catalog}\");\r\nlet SourceIPFilter = iff(\"{SourceIP}\" == \"*\" or isempty(\"{SourceIP}\"), \"\", \"{SourceIP}\");\r\nlet TargetIPFilter = iff(\"{TargetIP}\" == \"*\" or isempty(\"{TargetIP}\"), \"\", \"{TargetIP}\");\r\n\r\nuberAgent_Process_ProcessDetail_CL\r\n| where SessionID_d > 0\r\n| where isnotempty(AppId_s) and AppId_s !contains \"OS\"\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| where isempty(SourceIPFilter) or Source_s has SourceIPFilter\r\n| where isempty(TargetIPFilter) or SourceType_s has TargetIPFilter\r\n| summarize [\"#Hosts\"] = dcount(Computer) by AppId_s\r\n| order by [\"#Hosts\"] desc\r\n| top 10 by [\"#Hosts\"]\r\n| project Name = AppId_s, [\"#Hosts\"]\r\n",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\nlet CatalogFilter = iff(\"{Catalog}\" == \"*\" or isempty(\"{Catalog}\"), \"\", \"{Catalog}\");\r\n\r\nuberAgent_Process_ProcessDetail_CL\r\n| where SessionID_d > 0\r\n| where isnotempty(AppId_s) and AppId_s !contains \"OS\"\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| summarize [\"#Hosts\"] = dcount(Computer) by AppId_s\r\n| order by [\"#Hosts\"] desc\r\n| top 10 by [\"#Hosts\"]\r\n| project Name = AppId_s, [\"#Hosts\"]\r\n",
         "size": 1,
         "title": "Number of computers running an application (top 10)",
         "timeContextFromParameter": "TimeRange",
@@ -301,7 +285,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\nlet CatalogFilter = iff(\"{Catalog}\" == \"*\" or isempty(\"{Catalog}\"), \"\", \"{Catalog}\");\r\nlet SourceIPFilter = iff(\"{SourceIP}\" == \"*\" or isempty(\"{SourceIP}\"), \"\", \"{SourceIP}\");\r\nlet TargetIPFilter = iff(\"{TargetIP}\" == \"*\" or isempty(\"{TargetIP}\"), \"\", \"{TargetIP}\");\r\n\r\nuberAgent_Process_ProcessDetail_CL\r\n| where SessionID_d > 0\r\n| where isnotempty(AppId_s) and AppId_s !contains \"OS\"\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| where isempty(SourceIPFilter) or Source_s has SourceIPFilter\r\n| where isempty(TargetIPFilter) or SourceType_s has TargetIPFilter\r\n| join kind=leftouter (\r\n    uberAgent_Application_AppNameIdMapping_CL\r\n    | summarize AppName = any(AppName_s) by AppId_s\r\n) on AppId_s\r\n| summarize [\"#Versions\"] = dcount(AppVersion_s), [\"#Users\"] = dcount(ProcUser_s), [\"#Hosts\"] = dcount(Computer) by AppName\r\n| extend sortfield = tolower(AppName)\r\n| order by sortfield asc\r\n| project Name = AppName, [\"#Versions\"], [\"#Users\"], [\"#Hosts\"]\r\n",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\nlet CatalogFilter = iff(\"{Catalog}\" == \"*\" or isempty(\"{Catalog}\"), \"\", \"{Catalog}\");\r\n\r\nuberAgent_Process_ProcessDetail_CL\r\n| where SessionID_d > 0\r\n| where isnotempty(AppId_s) and AppId_s !contains \"OS\"\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| join kind=leftouter (\r\n    uberAgent_Application_AppNameIdMapping_CL\r\n    | summarize AppName = any(AppName_s) by AppId_s\r\n) on AppId_s\r\n| summarize [\"#Versions\"] = dcount(AppVersion_s), [\"#Users\"] = dcount(ProcUser_s), [\"#Hosts\"] = dcount(Computer) by AppName\r\n| extend sortfield = tolower(AppName)\r\n| order by sortfield asc\r\n| project Name = AppName, [\"#Versions\"], [\"#Users\"], [\"#Hosts\"]\r\n",
         "size": 0,
         "title": "Application usage",
         "timeContextFromParameter": "TimeRange",
@@ -354,7 +338,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\nlet CatalogFilter = iff(\"{Catalog}\" == \"*\" or isempty(\"{Catalog}\"), \"\", \"{Catalog}\");\r\nlet SourceIPFilter = iff(\"{SourceIP}\" == \"*\" or isempty(\"{SourceIP}\"), \"\", \"{SourceIP}\");\r\nlet TargetIPFilter = iff(\"{TargetIP}\" == \"*\" or isempty(\"{TargetIP}\"), \"\", \"{TargetIP}\");\r\n\r\nuberAgent_Process_ProcessDetail_CL\r\n| where SessionID_d > 0\r\n| where isnotempty(AppId_s) and AppId_s !contains \"OS\"\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| where isempty(SourceIPFilter) or Source_s has SourceIPFilter\r\n| where isempty(TargetIPFilter) or SourceType_s has TargetIPFilter\r\n| join kind=leftouter (\r\n    uberAgent_Application_AppNameIdMapping_CL\r\n    | summarize AppName = any(AppName_s) by AppId_s\r\n) on AppId_s\r\n| summarize LastUsed = max(TimeGenerated) by ProcUser_s, AppName, AppVersion_s, Computer, SessionID_d, Source_s\r\n| order by ProcUser_s asc, AppName asc\r\n",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\nlet CatalogFilter = iff(\"{Catalog}\" == \"*\" or isempty(\"{Catalog}\"), \"\", \"{Catalog}\");\r\n\r\n\r\nuberAgent_Process_ProcessDetail_CL\r\n| where SessionID_d > 0\r\n| where isnotempty(AppId_s) and AppId_s !contains \"OS\"\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| join kind=leftouter (\r\n    uberAgent_Application_AppNameIdMapping_CL\r\n    | summarize AppName = any(AppName_s) by AppId_s\r\n) on AppId_s\r\n| summarize LastUsed = max(TimeGenerated) by ProcUser_s, AppName, AppVersion_s, Computer, SessionID_d, Source_s\r\n| order by ProcUser_s asc, AppName asc\r\n",
         "size": 0,
         "timeContext": {
           "durationMs": 86400000
