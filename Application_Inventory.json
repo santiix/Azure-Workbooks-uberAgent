@@ -173,10 +173,40 @@
       "styleSettings": {
         "showBorder": true
       }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\n\r\n// Installed apps\r\nlet InstalledApps =\r\n    uberAgent_Application_ApplicationInventory_CL\r\n    | where isempty(MachineFilter) or Computer has MachineFilter\r\n    | project Computer, AppName = tostring(DisplayName_s), Publisher = tostring(Publisher_s)\r\n    | summarize by Computer, AppName, Publisher;\r\n\r\n// Launched apps (from process data)\r\nlet LaunchedApps =\r\n    uberAgent_Process_ProcessDetail_CL\r\n    | where isempty(MachineFilter) or Computer has MachineFilter\r\n    | summarize LaunchCount = count() by Computer, AppName = tostring(ProcName_s);\r\n\r\n// Installed apps with launch info (leftouter join)\r\nlet InstalledJoin =\r\n    InstalledApps\r\n    | join kind=leftouter (LaunchedApps) on Computer, AppName\r\n    | extend WasLaunched = iff(isnull(LaunchCount) or LaunchCount == 0, \"No\", \"Yes\")\r\n    | project Computer, AppName, Publisher, LaunchCount = coalesce(LaunchCount, 0), WasLaunched, Source = \"Installed\";\r\n\r\n// Launched-only apps that were not in inventory (leftanti join)\r\nlet LaunchedOnly =\r\n    LaunchedApps\r\n    | join kind=leftanti (InstalledApps) on Computer, AppName\r\n    | extend Publisher = \"Not Installed\", WasLaunched = \"Yes\"\r\n    | project Computer, AppName, Publisher, LaunchCount, WasLaunched, Source = \"Launched Only\";\r\n\r\n// Combine both\r\nInstalledJoin\r\n| union LaunchedOnly\r\n| sort by WasLaunched asc, LaunchCount desc, AppName asc\r\n\r\n",
+        "size": 0,
+        "title": "Installed and Launched Apps",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ],
+        "gridSettings": {
+          "sortBy": [
+            {
+              "itemKey": "LaunchCount",
+              "sortOrder": 2
+            }
+          ]
+        },
+        "sortBy": [
+          {
+            "itemKey": "LaunchCount",
+            "sortOrder": 2
+          }
+        ]
+      },
+      "name": "query - 6"
     }
   ],
   "fallbackResourceIds": [
     "azure monitor"
   ],
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
-}        
+}    
