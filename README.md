@@ -23,6 +23,7 @@ The goal is to help others:
 
 ### **Logon and Session Analysis**
 - **Logon Diagnosis**
+- **Logon Analysis**
 - **Single User Session Details**
 - **Single Machine Details**
 ![image](https://github.com/user-attachments/assets/5f83ae6e-f54f-450e-a863-71fcb0a06cf0)
