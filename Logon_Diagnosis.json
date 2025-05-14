@@ -4,7 +4,7 @@
     {
       "type": 1,
       "content": {
-        "json": "User Search: use \\\\\\ for Domain\\\\\\User",
+        "json": "User Search: use \\\\\\ for Domain\\\\\\User or Username",
         "style": "warning"
       },
       "name": "text - 6"
@@ -78,7 +78,7 @@
               "durationMs": 86400000
             },
             "value": {
-              "durationMs": 86400000
+              "durationMs": 172800000
             }
           },
           {
@@ -215,11 +215,12 @@
               "version": "KqlItem/1.0",
               "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\r\nlet UserFilter = iff('{User}' == '*' or isempty('{User}'), '', '{User}');\r\nuberAgent_Logon_LogonDetail_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or User_s has UserFilter\r\n| extend ProfileLoadSeconds = round(ProfileLoadTimeMs_d / 1000.0, 2)\r\n| summarize AvgProfileLoad = avg(ProfileLoadSeconds) by bin(TimeGenerated, 5m), Computer",
               "size": 0,
-              "title": "Profile Load Time Over Time",
+              "title": "Profile Load Time Over Time in Seconds",
+              "color": "green",
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
               "resourceType": "microsoft.operationalinsights/workspaces",
-              "visualization": "linechart"
+              "visualization": "barchart"
             },
             "customWidth": "50",
             "name": "query - 0",
@@ -233,11 +234,11 @@
               "version": "KqlItem/1.0",
               "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\r\nlet UserFilter = iff('{User}' == '*' or isempty('{User}'), '', '{User}');\r\nuberAgent_Logon_LogonDetail_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or User_s has UserFilter\r\n| extend GpoProcessingSeconds = round(GroupPolicyTotalProcessingTimeMs_d / 1000.0, 2)\r\n| summarize AvgGpoProcessing = avg(GpoProcessingSeconds) by bin(TimeGenerated, 5m), Computer\r\n| order by TimeGenerated asc",
               "size": 0,
-              "title": "Group Policy Processing Time Over Time",
+              "title": "Group Policy Processing Time Over Time in Seconds",
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
               "resourceType": "microsoft.operationalinsights/workspaces",
-              "visualization": "linechart"
+              "visualization": "barchart"
             },
             "customWidth": "50",
             "name": "query - 1",
@@ -251,11 +252,12 @@
               "version": "KqlItem/1.0",
               "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\r\nlet UserFilter = iff('{User}' == '*' or isempty('{User}'), '', '{User}');\r\nuberAgent_Logon_LogonDetail_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or User_s has UserFilter\r\n| extend ShellStartupSeconds = round(ShellStartupTimeMs_d / 1000.0, 2)\r\n| summarize AvgShellStartup = avg(ShellStartupSeconds) by bin(TimeGenerated, 5m), Computer\r\n| order by TimeGenerated asc",
               "size": 0,
-              "title": "Shell Startup Time Over Time",
+              "title": "Shell Startup Time Over Time in Seconds",
+              "color": "orange",
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
               "resourceType": "microsoft.operationalinsights/workspaces",
-              "visualization": "linechart"
+              "visualization": "barchart"
             },
             "customWidth": "50",
             "name": "query - 2",
@@ -269,11 +271,12 @@
               "version": "KqlItem/1.0",
               "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\r\nlet UserFilter = iff('{User}' == '*' or isempty('{User}'), '', '{User}');\r\nuberAgent_Logon_LogonDetail_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or User_s has UserFilter\r\n| extend PreLogonSeconds = round(PreLogonInitTimeMs_d / 1000.0, 2)\r\n| summarize AvgPreLogon = avg(PreLogonSeconds) by bin(TimeGenerated, 5m), Computer\r\n| order by TimeGenerated asc",
               "size": 0,
-              "title": "Pre-Logon Delay Over Time",
+              "title": "Pre-Logon Delay Over Time in Seconds",
+              "color": "amethyst",
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
               "resourceType": "microsoft.operationalinsights/workspaces",
-              "visualization": "linechart"
+              "visualization": "barchart"
             },
             "customWidth": "50",
             "name": "query - 3",
@@ -303,6 +306,7 @@
               "query": "let MachineFilter = iff(\"{Machine}\" == \"*\" or isempty(\"{Machine}\"), \"\", \"{Machine}\");\r\nlet UserFilter = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\n\r\nlet TopCSEs = \r\n    uberAgent_Logon_GroupPolicyCSEDetail2_CL\r\n    | where isempty(MachineFilter) or Computer has MachineFilter\r\n    | where isempty(UserFilter) or User_s has UserFilter\r\n    | summarize AvgCseDurationS = avg(CseDurationS_d) by CseName_s\r\n    | top 10 by AvgCseDurationS\r\n    | project CseName_s;\r\n\r\nuberAgent_Logon_GroupPolicyCSEDetail2_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or User_s has UserFilter\r\n| where CseName_s in (TopCSEs)\r\n| summarize AvgCseDurationS = round(avg(CseDurationS_d), 2) by Computer, CseName_s\r\n| project [\"Computer\"] = Computer, [\"CSE Component\"] = CseName_s, [\"Avg. Duration (s)\"] = AvgCseDurationS\r\n| order by [\"Avg. Duration (s)\"] desc\r\n\r\n",
               "size": 0,
               "title": "Group Policy Procesing Time",
+              "color": "turquoise",
               "timeContextFromParameter": "TimeRange",
               "exportToExcelOptions": "all",
               "queryType": 0,
@@ -414,9 +418,7 @@
         "query": "let MachineFilter = iff('{Machine}' == '*' or isempty('{Machine}'), '', '{Machine}');\r\nlet UserFilter = iff('{User}' == '*' or isempty('{User}'), '', '{User}');\r\n\r\nuberAgent_Process_ProcessStatistics_CL\r\n| where isempty(MachineFilter) or Computer has MachineFilter\r\n| where isempty(UserFilter) or ProcUser_s has UserFilter\r\n| summarize MaxInputDelayMs = max(ProcInputDelayMaxMs_d) by ProcName_s, Computer\r\n| top 10 by MaxInputDelayMs desc\r\n| project Computer, ProcName_s, MaxInputDelayMs\r\n",
         "size": 0,
         "title": "Input Delay",
-        "timeContext": {
-          "durationMs": 86400000
-        },
+        "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces"
       },
