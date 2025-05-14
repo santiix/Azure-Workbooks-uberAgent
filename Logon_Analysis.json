@@ -1,0 +1,326 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "Before data is presented, you will see a warning on each query: This query could not run because some parameters are not set.  Please set: Machine, User\r\n\r\nThis message will go away after you select a ( User and Machine ) from the drop down menu as an example of using drop downs.",
+        "style": "warning"
+      },
+      "name": "text - 8"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "🔍 **Logon Diagnostic Workbook** — Pick a machine, user, and timeframe",
+        "style": "info"
+      },
+      "name": "intro"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "TimeRange",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isGlobal": true,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 2592000000
+                }
+              ],
+              "allowCustom": true
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "value": {
+              "durationMs": 172800000
+            }
+          },
+          {
+            "id": "Machine",
+            "version": "KqlParameterItem/1.0",
+            "name": "Machine",
+            "type": 2,
+            "isRequired": true,
+            "isGlobal": true,
+            "query": "uberAgent_Logon_LogonDetail_CL\n| where isnotempty(Computer)\n| summarize by Computer\n| project Machine = Computer\n| order by Machine asc",
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "value": null
+          },
+          {
+            "id": "User",
+            "version": "KqlParameterItem/1.0",
+            "name": "User",
+            "type": 2,
+            "isRequired": true,
+            "isGlobal": true,
+            "query": "uberAgent_Logon_LogonDetail_CL\n| where isnotempty(User_s)\n| extend ShortUser = tostring(split(User_s, \"\\\\\")[-1])\n| summarize by ShortUser\n| project User = ShortUser\n| order by User asc",
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "value": null
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "filters"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "## 🧭 Logon Timeline Overview",
+        "style": "info"
+      },
+      "name": "hdr-overview"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let MachineFilter = iff('{Machine}'=='*' or isempty('{Machine}'), '', '{Machine}');\nlet UserFilter = iff('{User}'=='*' or isempty('{User}'), '', '{User}');\nuberAgent_Logon_LogonDetail_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| where isempty(UserFilter) or User_s has UserFilter\n| extend Seconds = round(ProfileLoadTimeMs_d/1000.0,2)\n| summarize Avg=avg(Seconds) by bin(TimeGenerated,5m)\n| order by TimeGenerated asc",
+              "size": 0,
+              "title": "🕒 Profile Load (s)",
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "visualization": "barchart",
+              "chartSettings": {
+                "xAxis": "TimeGenerated"
+              }
+            },
+            "customWidth": "33",
+            "name": "query - 0"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let MachineFilter = iff('{Machine}'=='*' or isempty('{Machine}'), '', '{Machine}');\nlet UserFilter = iff('{User}'=='*' or isempty('{User}'), '', '{User}');\nuberAgent_Logon_LogonDetail_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| where isempty(UserFilter) or User_s has UserFilter\n| extend Seconds = round(GroupPolicyTotalProcessingTimeMs_d/1000.0,2)\n| summarize Avg=avg(Seconds) by bin(TimeGenerated,5m)\n| order by TimeGenerated asc",
+              "size": 0,
+              "title": "🔧 GPO Processing (s)",
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "visualization": "barchart",
+              "chartSettings": {
+                "xAxis": "TimeGenerated"
+              }
+            },
+            "customWidth": "33",
+            "name": "query - 1"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let MachineFilter = iff('{Machine}'=='*' or isempty('{Machine}'), '', '{Machine}');\nlet UserFilter = iff('{User}'=='*' or isempty('{User}'), '', '{User}');\nuberAgent_Logon_LogonDetail_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| where isempty(UserFilter) or User_s has UserFilter\n| extend Seconds = round(ShellStartupTimeMs_d/1000.0,2)\n| summarize Avg=avg(Seconds) by bin(TimeGenerated,5m)\n| order by TimeGenerated asc",
+              "size": 0,
+              "title": "⚙️ Shell Startup (s)",
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "visualization": "categoricalbar",
+              "chartSettings": {
+                "xAxis": "TimeGenerated"
+              }
+            },
+            "customWidth": "33",
+            "name": "query - 2"
+          }
+        ]
+      },
+      "name": "grp-overview"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "## 🔍 Deep‑Dive Components",
+        "style": "info"
+      },
+      "name": "hdr-deep"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let MachineFilter = iff('{Machine}'=='*' or isempty('{Machine}'), '', '{Machine}');\nlet UserFilter = iff('{User}'=='*' or isempty('{User}'), '', '{User}');\nuberAgent_Logon_LogonDetail_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| where isempty(UserFilter) or User_s has UserFilter\n| extend Seconds = round(PreLogonInitTimeMs_d/1000.0,2)\n| summarize Avg=avg(Seconds) by bin(TimeGenerated,5m)\n| order by TimeGenerated asc",
+              "size": 0,
+              "title": "⏱ Pre‑Logon Init (s)",
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "visualization": "barchart",
+              "chartSettings": {
+                "xAxis": "TimeGenerated"
+              }
+            },
+            "customWidth": "50",
+            "name": "query - 0"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let MachineFilter = iff('{Machine}'=='*' or isempty('{Machine}'), '', '{Machine}');\nlet UserFilter = iff('{User}'=='*' or isempty('{User}'), '', '{User}');\nuberAgent_Logon_GroupPolicyCSEDetail2_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| where isempty(UserFilter) or User_s has UserFilter\n| summarize AvgSec = round(avg(CseDurationS_d),2) by CseName_s\n| order by AvgSec desc",
+              "size": 0,
+              "title": "📦 Avg CSE Durations",
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "visualization": "barchart",
+              "chartSettings": {
+                "xAxis": "CseName_s"
+              }
+            },
+            "customWidth": "50",
+            "name": "query - 1"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let MachineFilter = iff('{Machine}'=='*' or isempty('{Machine}'), '', '{Machine}');\nlet UserFilter = iff('{User}'=='*' or isempty('{User}'), '', '{User}');\nuberAgent_Process_LogonProcesses_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| where isempty(UserFilter) or ProcUser_s has UserFilter\n| extend StartupSec = round(ProcStartTimeRelativeMs_d/1000.0,2)\n| top 10 by StartupSec desc\n| project Computer, ProcUser_s, ProcName_s, StartupSec",
+              "size": 0,
+              "title": "📋 Slow Startup Processes",
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "visualization": "table"
+            },
+            "customWidth": "60",
+            "name": "query - 3",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let MachineFilter = iff('{Machine}'=='*' or isempty('{Machine}'), '', '{Machine}');\nlet UserFilter = iff('{User}'=='*' or isempty('{User}'), '', '{User}');\nuberAgent_Logon_GroupPolicyCSEDetail2_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| where isempty(UserFilter) or User_s has UserFilter\n| summarize AvgSec = round(avg(CseDurationS_d),2) by Computer, CseName_s\n| top 10 by AvgSec desc\n| order by AvgSec desc",
+              "size": 0,
+              "title": "📊 Top CSE Delays",
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "visualization": "table"
+            },
+            "customWidth": "30",
+            "name": "query - 2"
+          }
+        ]
+      },
+      "name": "grp-deep"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "## 📈 Resource Performance During Logon",
+        "style": "info"
+      },
+      "name": "hdr-perf"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let MachineFilter = iff('{Machine}'=='*' or isempty('{Machine}'), '', '{Machine}');\nuberAgent_System_SystemPerformanceSummary2_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| summarize AvgRead = avg(IOLatencyMsRead_d), AvgWrite = avg(IOLatencyMsWrite_d) by bin(TimeGenerated,5m)\n| order by TimeGenerated asc",
+              "size": 0,
+              "title": "💽 Disk Latency (ms)",
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "visualization": "linechart",
+              "chartSettings": {
+                "xAxis": "TimeGenerated"
+              }
+            },
+            "customWidth": "50",
+            "name": "query - 0"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let MachineFilter = iff('{Machine}'=='*' or isempty('{Machine}'), '', '{Machine}');\nuberAgent_Process_ProcessStatistics_CL\n| where isempty(MachineFilter) or Computer has MachineFilter\n| summarize AvgThreads = avg(ProcThreadCount_d) by bin(TimeGenerated,5m)\n| order by TimeGenerated asc",
+              "size": 0,
+              "title": "🧠 Avg Thread Count",
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "visualization": "linechart",
+              "chartSettings": {
+                "xAxis": "TimeGenerated"
+              }
+            },
+            "customWidth": "50",
+            "name": "query - 1"
+          }
+        ]
+      },
+      "name": "grp-perf"
+    }
+  ],
+  "defaultResourceIds": [
+    "azure monitor",
+    "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+  ],
+  "fallbackResourceIds": [
+    "azure monitor",
+    "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
