@@ -26,7 +26,7 @@
             "type": 4,
             "isGlobal": true,
             "value": {
-              "durationMs": 86400000
+              "durationMs": 259200000
             }
           }
         ],
@@ -95,12 +95,9 @@
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "visualization": "barchart"
       },
-      "customWidth": "25",
+      "customWidth": "30",
       "name": "Events Over Time",
       "styleSettings": {
         "showBorder": true
@@ -116,6 +113,10 @@
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ],
         "visualization": "barchart"
       },
       "customWidth": "33",
@@ -133,7 +134,11 @@
         "title": "Event Log Breakdown by Channel",
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces"
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
       },
       "customWidth": "25",
       "name": "Log Breakdown",
@@ -167,7 +172,7 @@
           }
         ]
       },
-      "customWidth": "33",
+      "customWidth": "40",
       "name": "query - 7",
       "styleSettings": {
         "showBorder": true
@@ -191,7 +196,7 @@
                   "type": 1,
                   "defaultValue": "*",
                   "quote": false,
-                  "value": ""
+                  "value": "*"
                 }
               ],
               "style": "pills",
@@ -212,15 +217,15 @@
               "gridSettings": {
                 "sortBy": [
                   {
-                    "itemKey": "EventID",
-                    "sortOrder": 1
+                    "itemKey": "Data4",
+                    "sortOrder": 2
                   }
                 ]
               },
               "sortBy": [
                 {
-                  "itemKey": "EventID",
-                  "sortOrder": 1
+                  "itemKey": "Data4",
+                  "sortOrder": 2
                 }
               ]
             },
@@ -260,7 +265,11 @@
         "title": "Audit Event by User",
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces"
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
       },
       "customWidth": "33",
       "name": "query - 10",
@@ -290,8 +299,12 @@
       }
     }
   ],
+  "defaultResourceIds": [
+    "azure monitor",
+    "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+  ],
   "fallbackResourceIds": [
-    "Azure Monitor",
+    "azure monitor",
     "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
   ],
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
