@@ -1,0 +1,789 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_Application_ApplicationInventory_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_Application_ApplicationInventory_CL - Contains a list of installed applications per machine. Useful for software audits and inventory tracking. Key fields: AppName_s, Version_s, MachineName_s. Relat...",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "query - 0"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_Application_AppNameIdMapping_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_Application_AppNameIdMapping_CL - Provides mapping between short application IDs and full application names. Used for lookups across dashboards. Key fields: AppNameId_s, AppName_s.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 1"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_Application_BrowserPerformanceChrome_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_Application_BrowserPerformanceChrome_CL - Chrome browser performance metrics such as CPU usage, memory, and tab activity. Key fields: ProcName_s, User_s, Machine_s, TabTitle_s.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_Application_BrowserWebRequests2_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_Application_BrowserWebRequests2_CL - Captures web requests from browser tabs, includes URL and performance data. Key fields: User_s, Machine_s, DnsRequest_s, TabId_g.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 3"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_Application_Errors_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_Application_Errors_CL - Application crash and error reports. Key fields: ProcName_s, ExitCode_d, Message_s, Machine_s.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 4"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_Application_NetworkConnectFailure_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_Application_NetworkConnectFailure_CL - Tracks failed outbound network connections. Useful for troubleshooting app connectivity. Key fields: ProcName_s, DestinationIp_s, Port_d.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 5"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_Application_SoftwareUpdateInventory_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_Application_SoftwareUpdateInventory_CL - Lists installed Windows Updates/patches per machine. Fields: UpdateName_s, InstalledOn_t, Machine_s.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 6"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_Application_UIDelay_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_Application_UIDelay_CL - Measures unresponsive application behavior (UI stalls). Key fields: ProcName_s, DelayDurationMs_d, Machine_s.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 7"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_CitrixSession_SessionConfig_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_CitrixSession_SessionConfig_CL - Configuration details of Citrix sessions (e.g., display settings, session state). Key fields: SessionId_g, Machine_s, Broker_s.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 8"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_CitrixSession_VirtualChannelDetail_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_CitrixSession_VirtualChannelDetail_CL - Detailed virtual channel usage data in Citrix sessions. Key fields: ChannelName_s, BandwidthKbps_d, SessionId_g.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 9"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_Config_ConfigInfo_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_Config_ConfigInfo_CL - uberAgent agent config snapshot. Includes version, enabled features. Fields: AgentVersion_s, ProductComponent_s.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 10"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_License_LicenseInfo_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_License_LicenseInfo_CL - License usage metrics for uberAgent. Fields: LicenseType_s, InUseCount_d.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 11"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_Logoff_LogoffDetail_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_Logoff_LogoffDetail_CL - Details of user logoff events, including logoff time and affected apps. Key fields: User_s, Machine_s, LogoffTime_t.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 12"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_Logon_GroupPolicyCSEDetail2_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_Logon_GroupPolicyCSEDetail2_CL - Client-Side Extension (CSE) logon timings. Key fields: CseName_s, CseDurationS_d, User_s.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 13"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_Logon_LogonDetail_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_Logon_LogonDetail_CL - Breakdown of logon performance: GPO, profile load, logon script, etc. Key fields: User_s, Machine_s, SessionId_g.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 14"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_OnOffTransition_BootDetail2_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_OnOffTransition_BootDetail2_CL - Boot duration summary with phase breakdown. Key fields: Machine_s, BootTime_t.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 15"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_OnOffTransition_BootProcessDetail_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_OnOffTransition_BootProcessDetail_CL - Process-level details during boot. Fields: ProcName_s, StartTime_t, DurationMs_d.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 16"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_OnOffTransition_BootProcesses_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_OnOffTransition_BootProcesses_CL - All processes started during boot. Fields: ProcName_s, User_s, StartType_s.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 17"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_Process_LogoffProcesses_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_Process_LogoffProcesses_CL - List of processes running at logoff. Fields: ProcName_s, User_s, Machine_s.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 18"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_Process_LogonProcesses_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_Process_LogonProcesses_CL - Processes triggered during logon. Key fields: ProcName_s, StartTime_t, User_s.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 19"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_Process_NetworkTargetPerformance_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_Process_NetworkTargetPerformance_CL - Network performance per process and target IP/port. Key fields: ProcName_s, DstIp_s, Port_d.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 20"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_Process_ProcessDetail_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_Process_ProcessDetail_CL - Live process performance metrics (CPU, RAM, I/O). Key fields: ProcName_s, PID_d, User_s, Machine_s.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 21"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_Process_ProcessStartup_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_Process_ProcessStartup_CL - Time breakdown of process startup phases. Key fields: ProcName_s, DurationMs_d, User_s.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 22"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_Process_ProcessStatistics_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_Process_ProcessStatistics_CL - Thread, handle, and object count stats per process. Key fields: ProcName_s, Threads_d, Handles_d.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 23"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_Session_SessionDetail_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_Session_SessionDetail_CL - Core session telemetry: resolution, hostname, clipboard, idle time. Key fields: SessionId_g, User_s, Machine_s.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 24"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_System_Bugcheck_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_System_Bugcheck_CL - System crash (BSOD) data. Key fields: BugcheckCode_d, Machine_s, CrashTime_t.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 25"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_System_DiskInventory_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_System_DiskInventory_CL - Lists disk devices and their properties. Key fields: Machine_s, DiskModel_s.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 26"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_System_GpuUsage_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_System_GpuUsage_CL - GPU usage metrics per process. Key fields: ProcName_s, GpuUtilization_d.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 27"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_System_GpuUsageEngine_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_System_GpuUsageEngine_CL - Detailed GPU engine metrics. Fields: EngineName_s, Utilization_d.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 28"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_System_MachineInventory_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_System_MachineInventory_CL - Basic machine inventory: OS version, model, CPU. Key fields: Machine_s, OSVersion_s.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 29"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_System_NetworkConfigInformation_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_System_NetworkConfigInformation_CL - IP configuration, DNS, and NIC info. Fields: Machine_s, IpAddress_s, DnsServer_s.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 30"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_System_SmbClient_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_System_SmbClient_CL - SMB share access per client. Key fields: ShareName_s, Machine_s.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 31"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_System_SystemPerformanceSummary2_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_System_SystemPerformanceSummary2_CL - System-wide metrics: CPU, RAM, IOPS. Fields: Machine_s, CpuUtilization_d, RamUsedMb_d.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 32"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_System_VolumeInventory_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgent_System_VolumeInventory_CL - Logical volume details: size, label, type. Fields: VolumeLabel_s, Machine_s.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 33"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgentESA_ActivityMonitoring_ProcessTagging_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgentESA_ActivityMonitoring_ProcessTagging_CL - ESA tag-based behavior analysis. Fields: ProcName_s, Tag_s, ActivityName_s.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 34"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgentESA_Process_DnsQuery_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgentESA_Process_DnsQuery_CL - Captured DNS queries by process. Key fields: ProcName_s, Query_s, Machine_s.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 35"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgentESA_Process_ProcessStop_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgentESA_Process_ProcessStop_CL - Process termination events. Fields: ProcName_s, ExitCode_d, StopTime_t.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 36"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgentESA_System_ScheduledTaskActions_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgentESA_System_ScheduledTaskActions_CL - Scheduled Task action definitions. Fields: TaskName_s, ActionType_s.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 37"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgentESA_System_ScheduledTasks_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgentESA_System_ScheduledTasks_CL - Scheduled Task inventory. Fields: TaskName_s, Enabled_b.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 38"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgentESA_System_ScheduledTaskTriggers_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgentESA_System_ScheduledTaskTriggers_CL - Trigger definitions for tasks. Fields: TriggerType_s, StartTime_t.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 39"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgentESA_System_WinEvtLogForwarding_CL\n| top 3 by TimeGenerated desc",
+        "size": 1,
+        "title": "uberAgentESA_System_WinEvtLogForwarding_CL - Forwarded Windows Event Logs. Fields: EventID_d, LogName_s, Message_s.",
+        "exportToExcelOptions": {
+          "enabled": true
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "azure monitor",
+          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+        ]
+      },
+      "name": "query - 40"
+    }
+  ],
+  "defaultResourceIds": [
+    "azure monitor",
+    "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+  ],
+  "fallbackResourceIds": [
+    "azure monitor",
+    "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
