@@ -21,7 +21,8 @@ The goal is to help others:
 ## 🛠️ Install & Requirements:
 > - Azure Subscription with Monitor and Log Analytics enabled.
    > - Microsoft.OperationalInsight and Microsoft.Insight required:Enable under your Azure Subscription under Resource Providers:
-> - ![image](https://github.com/user-attachments/assets/12e36a07-0c4b-4f40-8f56-4c270c7b48c1)
+
+![image](https://github.com/user-attachments/assets/12e36a07-0c4b-4f40-8f56-4c270c7b48c1)
 
 
 **uberAgent Installation Guide**
@@ -30,6 +31,7 @@ https://docs.citrix.com/en-us/uberagent/7-3-1/installation/backend/configuring-m
 - Run uberAgent_7.3.1_x64.msi
 - Enable Chrome extension for browser data: https://chromewebstore.google.com/detail/uberagent/jghgedlkcoafeakcaepncnlanjkbinpb?hl=en
 
+
 **Configure uberAgent to send logs to Azure Monitor (Log Analytics Workspace)**
 - Copy & Paste the contents of **C:\Program Files\vast limits\uberAgent\Config Templates** to **C:\ProgramData\vastlimits\uberAgent\Configuration**
 - Rename **uberAgent.conf** to **uberAgent.bak**
@@ -37,12 +39,12 @@ https://docs.citrix.com/en-us/uberagent/7-3-1/installation/backend/configuring-m
 Data volume optimized control the flow of data to not overwhelm the system as you get started.
 - Edit **uberAgent.conf** file and enter your Receiver details:
   
-  [Receiver]
-  Name= (Match Workspace Log name)
-  Type= OMSLogAnalytics
-  Protocol= HTTP
-  Servers= https://WORKSPACE-LOG-ID.ods.opinsights.azure.com
-  RESTToken= WORKSPACE-LOG-PRVATE-TOKEN
+>[Receiver]
+> - Name= (Match Workspace Log name)
+> - Type= OMSLogAnalytics
+> - Protocol= HTTP
+> - Servers= https://WORKSPACE-LOG-ID.ods.opinsights.azure.com
+> - RESTToken= WORKSPACE-LOG-PRVATE-TOKEN
 
 - Enable Windows Event Forwarding: uberAgent-ESA-eventlog-windows.conf : Uncomment Option to use.
 - Restart uberAgent service after saving changes
