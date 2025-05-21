@@ -27,11 +27,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 1"
     },
@@ -46,11 +42,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 2"
     },
@@ -65,11 +57,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 3"
     },
@@ -84,11 +72,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 4"
     },
@@ -103,11 +87,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 5"
     },
@@ -122,11 +102,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 6"
     },
@@ -141,11 +117,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 7"
     },
@@ -160,11 +132,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 8"
     },
@@ -179,11 +147,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 9"
     },
@@ -198,11 +162,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 10"
     },
@@ -217,11 +177,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 11"
     },
@@ -236,11 +192,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 12"
     },
@@ -255,11 +207,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 13"
     },
@@ -274,11 +222,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 14"
     },
@@ -293,11 +237,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 15"
     },
@@ -312,11 +252,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 16"
     },
@@ -331,11 +267,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 17"
     },
@@ -350,11 +282,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 18"
     },
@@ -369,11 +297,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 19"
     },
@@ -388,11 +312,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 20"
     },
@@ -407,11 +327,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 21"
     },
@@ -426,11 +342,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 22"
     },
@@ -445,11 +357,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 23"
     },
@@ -464,11 +372,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 24"
     },
@@ -483,11 +387,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 25"
     },
@@ -502,11 +402,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 26"
     },
@@ -521,11 +417,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 27"
     },
@@ -540,11 +432,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 28"
     },
@@ -559,11 +447,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 29"
     },
@@ -578,11 +462,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 30"
     },
@@ -597,11 +477,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 31"
     },
@@ -616,11 +492,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 32"
     },
@@ -635,11 +507,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 33"
     },
@@ -654,11 +522,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 34"
     },
@@ -673,11 +537,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 35"
     },
@@ -692,11 +552,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 36"
     },
@@ -711,11 +567,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 37"
     },
@@ -730,11 +582,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 38"
     },
@@ -749,11 +597,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 39"
     },
@@ -768,11 +612,7 @@
           "enabled": true
         },
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "azure monitor",
-          "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
-        ]
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "query - 40"
     }
