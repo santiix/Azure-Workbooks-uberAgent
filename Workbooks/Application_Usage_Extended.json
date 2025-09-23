@@ -1,0 +1,183 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "User Search: Use \\\\ for Domain\\\\User or just search by username",
+        "style": "warning"
+      },
+      "name": "text - 8"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "TimeRange",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "label": "Time Range",
+            "type": 4,
+            "value": {
+              "durationMs": 1800000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 604800000
+                }
+              ],
+              "allowCustom": true
+            }
+          },
+          {
+            "id": "Computer",
+            "version": "KqlParameterItem/1.0",
+            "name": "Computer",
+            "label": "Select Computer",
+            "type": 2,
+            "query": "uberAgent_Session_SessionDetail_CL | summarize arg_max(TimeGenerated, Computer) by Computer | project Value = Computer",
+            "value": "W2025-LAB-AZC",
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          },
+          {
+            "id": "User",
+            "version": "KqlParameterItem/1.0",
+            "name": "User",
+            "label": "Select User",
+            "type": 1,
+            "timeContext": {
+              "durationMs": 1800000
+            },
+            "timeContextFromParameter": "TimeRange",
+            "value": "CTX-LAB\\\\atslabadmin"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "filters"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let AppMap = uberAgent_Application_AppNameIdMapping_CL \r\n    | summarize AppName=any(AppName_s) by AppId_s;\r\nuberAgent_Process_ProcessDetail_CL\r\n| join kind=leftouter (AppMap) on AppId_s\r\n| summarize TotalLaunches=count() by AppName\r\n| top 10 by TotalLaunches\r\n",
+        "size": 0,
+        "title": "Top Apps Across All Systems",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "piechart"
+      },
+      "customWidth": "50",
+      "name": "query - 7"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let AppMap = uberAgent_Application_AppNameIdMapping_CL | summarize AppName=any(AppName_s) by AppId_s;\nuberAgent_Process_ProcessDetail_CL\n| where isempty('{Computer}') or Computer == '{Computer}'\n| join kind=leftouter (AppMap) on AppId_s\n| summarize MaxMemMB=max(ProcWorkingSetMB_d) by AppName\n| top 10 by MaxMemMB desc",
+        "size": 0,
+        "title": "Top 10 Apps by Memory Usage",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "barchart"
+      },
+      "customWidth": "50",
+      "name": "Top 10 Apps"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "uberAgent_Session_SessionDetail_CL\n| where isempty('{Computer}') or Computer == '{Computer}'\n| where isempty('{User}') or SessionUser_s == '{User}'\n| project TimeGenerated, Computer, SessionID_d, SessionUser_s, SessionLogonTime_s, SessionCPUUsagePercent_d, SessionWorkingSetMB_d, SessionFgProcessName_s, SessionFgWindowTitle_s",
+        "size": 1,
+        "title": "Active Sessions",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "table"
+      },
+      "name": "Session Overview"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let AppMap = uberAgent_Application_AppNameIdMapping_CL | summarize AppName=any(AppName_s) by AppId_s;\nuberAgent_Process_ProcessDetail_CL\n| where isempty('{Computer}') or Computer == '{Computer}'\n| where isempty('{User}') or ProcUser_s == '{User}'\n| join kind=leftouter (AppMap) on AppId_s\n| summarize AppsUsed=dcount(AppName), TopApp=any(AppName), AvgCPU=avg(ProcCPUPercent_d), AvgMemMB=avg(ProcWorkingSetMB_d) by ProcUser_s, Computer\n| order by AvgMemMB desc",
+        "size": 1,
+        "title": "Per-User App Usage",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "Azure Monitor",
+          "/subscriptions/326ffc02-5ff1-4a73-b1b2-66a006218202/resourceGroups/ATSLab_Infra/providers/Microsoft.OperationalInsights/workspaces/uberagent"
+        ],
+        "visualization": "table"
+      },
+      "name": "Per User Breakdown"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let AppMap = uberAgent_Application_AppNameIdMapping_CL | summarize AppName=any(AppName_s) by AppId_s;\nuberAgent_Process_ProcessDetail_CL\n| where isempty('{Computer}') or Computer == '{Computer}'\n| where isempty('{User}') or ProcUser_s == '{User}'\n| join kind=leftouter (AppMap) on AppId_s\n| summarize LastUsed=max(TimeGenerated) by ProcUser_s, Computer, AppName, AppVersion_s\n| order by LastUsed desc",
+        "size": 1,
+        "title": "Last Used Applications",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "table"
+      },
+      "name": "Last Used Apps"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "// Friendly app name map\nlet AppMap =\n    uberAgent_Application_AppNameIdMapping_CL\n    | summarize AppName = any(AppName_s) by AppId_s;\n\nunion isfuzzy=true\n(\n    uberAgent_Process_ProcessDetail_CL\n    | project TimeGenerated, Computer, ProcUser_s, ProcName_s, AppId_s,\n             ProcCPUPercent_d, ProcWorkingSetMB_d,\n             ProcIOReadMB_d, ProcIOWriteMB_d, ProcNetKBPS_d\n),\n(\n    uberAgent_Process_ProcessStatistics_CL\n    | project TimeGenerated, Computer, ProcUser_s, ProcName_s, AppId_s,\n             ProcCPUPercent_d = real(null),\n             ProcWorkingSetMB_d = ProcPrivateMB_d,\n             ProcIOReadMB_d = real(null),\n             ProcIOWriteMB_d = real(null),\n             ProcNetKBPS_d   = real(null)\n)\n// 🔎 Apply dropdowns\n| where isempty('{Computer}') or Computer =~ '{Computer}'\n| where isempty('{User}') or tolower(ProcUser_s) contains tolower('{User}')\n| join kind=leftouter (AppMap) on AppId_s\n| extend AppName = coalesce(AppName, ProcName_s)\n// 👇 Keep AppId_s so \"Windows OS\" can be drilled into\n| summarize\n    AvgCPU      = avg(ProcCPUPercent_d),\n    MaxMemMB    = max(ProcWorkingSetMB_d),\n    TotalIO_MB  = sum(ProcIOReadMB_d + ProcIOWriteMB_d),\n    AvgNetKBPS  = avg(ProcNetKBPS_d),\n    Launches    = count()\n  by AppId_s, AppName, ProcUser_s, Computer\n| order by MaxMemMB desc\n",
+              "size": 2,
+              "title": "Application Usage by App & User",
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "visualization": "table"
+            },
+            "name": "Application Usage Table"
+          }
+        ]
+      },
+      "name": "group - 8"
+    }
+  ],
+  "defaultResourceIds": [
+    "Azure Monitor",
+    "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor",
+    "/subscriptions/<Azure-Subscription-ID>/resourceGroups/<Resource-Group-Name>/providers/Microsoft.OperationalInsights/workspaces/<LogAnalytics-Workspace-Name>"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
