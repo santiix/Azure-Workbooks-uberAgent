@@ -21,7 +21,7 @@
             "label": "Time Range",
             "type": 4,
             "value": {
-              "durationMs": 1800000
+              "durationMs": 604800000
             },
             "typeSettings": {
               "selectableValues": [
@@ -118,24 +118,6 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let AppMap = uberAgent_Application_AppNameIdMapping_CL | summarize AppName=any(AppName_s) by AppId_s;\nuberAgent_Process_ProcessDetail_CL\n| where isempty('{Computer}') or Computer == '{Computer}'\n| where isempty('{User}') or ProcUser_s == '{User}'\n| join kind=leftouter (AppMap) on AppId_s\n| summarize AppsUsed=dcount(AppName), TopApp=any(AppName), AvgCPU=avg(ProcCPUPercent_d), AvgMemMB=avg(ProcWorkingSetMB_d) by ProcUser_s, Computer\n| order by AvgMemMB desc",
-        "size": 1,
-        "title": "Per-User App Usage",
-        "timeContextFromParameter": "TimeRange",
-        "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "Azure Monitor",
-          "/subscriptions/326ffc02-5ff1-4a73-b1b2-66a006218202/resourceGroups/ATSLab_Infra/providers/Microsoft.OperationalInsights/workspaces/uberagent"
-        ],
-        "visualization": "table"
-      },
-      "name": "Per User Breakdown"
-    },
-    {
-      "type": 3,
-      "content": {
-        "version": "KqlItem/1.0",
         "query": "let AppMap = uberAgent_Application_AppNameIdMapping_CL | summarize AppName=any(AppName_s) by AppId_s;\nuberAgent_Process_ProcessDetail_CL\n| where isempty('{Computer}') or Computer == '{Computer}'\n| where isempty('{User}') or ProcUser_s == '{User}'\n| join kind=leftouter (AppMap) on AppId_s\n| summarize LastUsed=max(TimeGenerated) by ProcUser_s, Computer, AppName, AppVersion_s\n| order by LastUsed desc",
         "size": 1,
         "title": "Last Used Applications",
@@ -162,13 +144,53 @@
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
               "resourceType": "microsoft.operationalinsights/workspaces",
-              "visualization": "table"
+              "visualization": "table",
+              "gridSettings": {
+                "sortBy": [
+                  {
+                    "itemKey": "Launches",
+                    "sortOrder": 2
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "Launches",
+                  "sortOrder": 2
+                }
+              ]
             },
             "name": "Application Usage Table"
           }
         ]
       },
       "name": "group - 8"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "// Parameters\r\nlet MachineFilter = iff(\"{Computer}\" == \"*\" or isempty(\"{Computer}\"), \"\", \"{Computer}\");\r\nlet UserFilter    = iff(\"{User}\" == \"*\" or isempty(\"{User}\"), \"\", \"{User}\");\r\n\r\n// Installed apps (machine-level only)\r\nlet InstalledApps =\r\n    uberAgent_Application_ApplicationInventory_CL\r\n    | where isempty(MachineFilter) or Computer has MachineFilter\r\n    | project Computer, AppName = tostring(DisplayName_s), Publisher = tostring(Publisher_s)\r\n    | summarize by Computer, AppName, Publisher;\r\n\r\n// Launched apps (user + process data)\r\nlet LaunchedApps =\r\n    uberAgent_Process_ProcessDetail_CL\r\n    | where isempty(MachineFilter) or Computer has MachineFilter\r\n    | where isempty(UserFilter) or ProcUser_s has UserFilter\r\n    | summarize LaunchCount = count() by Computer, ProcUser_s, AppName = tostring(ProcName_s);\r\n\r\n// Installed apps with launch info (join on Computer + AppName)\r\nlet InstalledJoin =\r\n    InstalledApps\r\n    | join kind=leftouter (LaunchedApps) on Computer, AppName\r\n    | extend WasLaunched = iff(isnull(LaunchCount) or LaunchCount == 0, \"No\", \"Yes\")\r\n    | project Computer, ProcUser_s, AppName, Publisher, LaunchCount = coalesce(LaunchCount, 0), WasLaunched, Source = \"Installed\";\r\n\r\n// Launched-only apps that weren’t in inventory\r\nlet LaunchedOnly =\r\n    LaunchedApps\r\n    | join kind=leftanti (InstalledApps) on Computer, AppName\r\n    | extend Publisher = \"Not Installed\", WasLaunched = \"Yes\"\r\n    | project Computer, ProcUser_s, AppName, Publisher, LaunchCount, WasLaunched, Source = \"Launched Only\";\r\n\r\n// Combine both views\r\nInstalledJoin\r\n| union LaunchedOnly\r\n| sort by WasLaunched asc, LaunchCount desc, AppName asc\r\n",
+        "size": 0,
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "gridSettings": {
+          "sortBy": [
+            {
+              "itemKey": "LaunchCount",
+              "sortOrder": 2
+            }
+          ]
+        },
+        "sortBy": [
+          {
+            "itemKey": "LaunchCount",
+            "sortOrder": 2
+          }
+        ]
+      },
+      "name": "query - 8"
     }
   ],
   "defaultResourceIds": [
