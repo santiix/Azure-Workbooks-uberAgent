@@ -65,10 +65,15 @@ Data volume optimized control the flow of data to not overwhelm the system as yo
 ### **Application Insights**
 - **App UI Unresponsive**
 - **Application Network Communications**
+
+![image](https://github.com/user-attachments/assets/3cd66596-23d6-4307-b34a-ff9a65f1702a)
+
 - **Application Inventory**
 - **Application Performance**
 - **Application Usage**
-![image](https://github.com/user-attachments/assets/3cd66596-23d6-4307-b34a-ff9a65f1702a)
+- **Application Usage Extended**
+![image](https://github.com/user-attachments/assets/6e480137-37cc-4c45-ad8c-0c443518bbfe)
+
 
 ### **System Health Monitoring**
 - **Machine Performance**
